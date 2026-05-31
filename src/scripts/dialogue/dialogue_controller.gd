@@ -10,6 +10,7 @@ extends Node
 var _dialogue_box: DialogueBox = null
 var _interactor: PlayerInteractor = null
 var _runner: DialogueRunner = null
+var _active_dialogue_id: String = ""
 
 func _ready() -> void:
     _dialogue_box = get_node_or_null(dialogue_box_path) as DialogueBox
@@ -57,6 +58,8 @@ func _start_dialogue(dialogue_id: String) -> void:
     var lines: Array = db.get_lines(dialogue_id)
     var start_id: String = db.get_start_id(dialogue_id)
     _runner = DialogueRunner.new()
+    _active_dialogue_id = dialogue_id
+    _runner.dialogue_ended.connect(_on_dialogue_ended)
     _dialogue_box.attach_runner(_runner)
     _runner.start(lines, start_id)
 
@@ -67,3 +70,12 @@ func _on_choice_picked(index: int) -> void:
 func _on_continue_pressed() -> void:
     if _runner != null:
         _runner.advance()
+
+func _on_dialogue_ended() -> void:
+    # 把已完成的对话记录到 GameState（用于存档 + Cycle 切换时检索记忆）
+    if _active_dialogue_id != "":
+        var gs = get_node_or_null("/root/GameState")
+        if gs != null:
+            gs.mark_dialogue_completed(_active_dialogue_id)
+        _active_dialogue_id = ""
+    _runner = null
