@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://btestworld1p1"]
+[gd_scene load_steps=7 format=3 uid="uid://btestworld1p1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="Script" path="res://src/scripts/test/world_builder.gd" id="2_builder"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Texture2D" uid="uid://d0medctlufyas" path="res://src/assets/characters/building_placeholder.png" id="4_building"]
 [ext_resource type="Script" path="res://src/scripts/test/spawn_test_npcs.gd" id="5_spawn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_building"]
+size = Vector2(36, 28)
 
 [node name="TestWorld" type="Node2D"]
 
@@ -14,17 +17,35 @@ tile_set = ExtResource("1_tileset")
 [node name="YSortContainer" type="Node2D" parent="."]
 y_sort_enabled = true
 
-[node name="Building1" type="Sprite2D" parent="YSortContainer"]
+[node name="Building1" type="StaticBody2D" parent="YSortContainer"]
 position = Vector2(200, 250)
+
+[node name="Sprite" type="Sprite2D" parent="YSortContainer/Building1"]
 texture = ExtResource("4_building")
 
-[node name="Building2" type="Sprite2D" parent="YSortContainer"]
+[node name="Collision" type="CollisionShape2D" parent="YSortContainer/Building1"]
+position = Vector2(0, 26)
+shape = SubResource("RectangleShape2D_building")
+
+[node name="Building2" type="StaticBody2D" parent="YSortContainer"]
 position = Vector2(440, 400)
+
+[node name="Sprite" type="Sprite2D" parent="YSortContainer/Building2"]
 texture = ExtResource("4_building")
 
-[node name="Building3" type="Sprite2D" parent="YSortContainer"]
+[node name="Collision" type="CollisionShape2D" parent="YSortContainer/Building2"]
+position = Vector2(0, 26)
+shape = SubResource("RectangleShape2D_building")
+
+[node name="Building3" type="StaticBody2D" parent="YSortContainer"]
 position = Vector2(150, 480)
+
+[node name="Sprite" type="Sprite2D" parent="YSortContainer/Building3"]
 texture = ExtResource("4_building")
+
+[node name="Collision" type="CollisionShape2D" parent="YSortContainer/Building3"]
+position = Vector2(0, 26)
+shape = SubResource("RectangleShape2D_building")
 
 [node name="Player" parent="YSortContainer" instance=ExtResource("3_player")]
 position = Vector2(320, 320)
