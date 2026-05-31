@@ -15,8 +15,17 @@
 
 - ✅ **P1 完成**：Godot 项目骨架 + 2.5D 等距技术验证（[报告](docs/tech-verification-p1/report.md)）
 - ✅ **P2 完成**：对话系统框架（数据 + 逻辑 + UI + 交互 + 示例）（[报告](docs/tech-verification-p2/report.md)）
+- ✅ **P3 完成**：存档/读档基础设施（GameState + SaveSystem + F9/F10）（[报告](docs/tech-verification-p3/report.md)）
 
-⏭️ **下一阶段**：P3 — 存档/读档基础设施
+⏭️ **下一阶段**：P4 — 待用户回来选择（候选：副本框架 / 场景管理器 / 第一个生肖关卡）
+
+## 测试摘要
+
+```bash
+# 跑所有单元测试（应 38/38 通过）
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . \
+  -s addons/gut/gut_cmdln.gd -gdir=res://tests/unit -gexit
+```
 
 ## 快速开始
 
