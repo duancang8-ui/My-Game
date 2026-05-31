@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://btestworld1p1"]
+[gd_scene load_steps=5 format=3 uid="uid://btestworld1p1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="Script" path="res://src/scripts/test/world_builder.gd" id="2_builder"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="3_player"]
+[ext_resource type="Texture2D" uid="uid://d0medctlufyas" path="res://src/assets/characters/building_placeholder.png" id="4_building"]
 
 [node name="TestWorld" type="Node2D"]
 
@@ -11,6 +12,18 @@ tile_set = ExtResource("1_tileset")
 
 [node name="YSortContainer" type="Node2D" parent="."]
 y_sort_enabled = true
+
+[node name="Building1" type="Sprite2D" parent="YSortContainer"]
+position = Vector2(200, 250)
+texture = ExtResource("4_building")
+
+[node name="Building2" type="Sprite2D" parent="YSortContainer"]
+position = Vector2(440, 400)
+texture = ExtResource("4_building")
+
+[node name="Building3" type="Sprite2D" parent="YSortContainer"]
+position = Vector2(150, 480)
+texture = ExtResource("4_building")
 
 [node name="Player" parent="YSortContainer" instance=ExtResource("3_player")]
 position = Vector2(320, 320)
