@@ -25,6 +25,7 @@ window/stretch/aspect="expand"
 
 [autoload]
 
+GameState="*res://src/scripts/save/game_state.gd"
 DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
 
 [editor_plugins]
