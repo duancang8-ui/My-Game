@@ -23,6 +23,10 @@ window/size/viewport_height=1080
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 
+[autoload]
+
+DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")

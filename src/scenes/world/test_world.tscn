@@ -1,13 +1,23 @@
-[gd_scene load_steps=7 format=3 uid="uid://btestworld1p1"]
+[gd_scene load_steps=11 format=3 uid="uid://btestworld1p1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="Script" path="res://src/scripts/test/world_builder.gd" id="2_builder"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Texture2D" uid="uid://d0medctlufyas" path="res://src/assets/characters/building_placeholder.png" id="4_building"]
 [ext_resource type="Script" path="res://src/scripts/test/spawn_test_npcs.gd" id="5_spawn"]
+[ext_resource type="PackedScene" uid="uid://bdialoguebox1" path="res://src/scenes/ui/dialogue_box.tscn" id="6_dlgbox"]
+[ext_resource type="Script" uid="uid://ddws0fkvtamqv" path="res://src/scripts/dialogue/dialogue_controller.gd" id="7_dlgctrl"]
+[ext_resource type="Texture2D" uid="uid://bqif0pn0xf5dj" path="res://src/assets/characters/player_placeholder.png" id="8_npc_sprite"]
+[ext_resource type="Script" uid="uid://0ttpp1qr2s2k" path="res://src/scripts/interaction/interactable.gd" id="9_interactable"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_building"]
 size = Vector2(36, 28)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_npc"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_npc_interact"]
+radius = 32.0
 
 [node name="TestWorld" type="Node2D"]
 
@@ -47,6 +57,29 @@ texture = ExtResource("4_building")
 position = Vector2(0, 26)
 shape = SubResource("RectangleShape2D_building")
 
+[node name="ChenJunnan" type="CharacterBody2D" parent="YSortContainer"]
+position = Vector2(420, 320)
+
+[node name="Sprite" type="Sprite2D" parent="YSortContainer/ChenJunnan"]
+texture = ExtResource("8_npc_sprite")
+modulate = Color(0.45, 0.75, 1.0, 1.0)
+
+[node name="Collision" type="CollisionShape2D" parent="YSortContainer/ChenJunnan"]
+position = Vector2(0, 14)
+shape = SubResource("CircleShape2D_npc")
+
+[node name="Interactable" type="Area2D" parent="YSortContainer/ChenJunnan"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("9_interactable")
+interaction_type = 1
+dialogue_id = "chen_junnan_intro"
+prompt_text = "[E] 与陈俊南交谈"
+
+[node name="InteractShape" type="CollisionShape2D" parent="YSortContainer/ChenJunnan/Interactable"]
+position = Vector2(0, 14)
+shape = SubResource("CircleShape2D_npc_interact")
+
 [node name="Player" parent="YSortContainer" instance=ExtResource("3_player")]
 position = Vector2(320, 320)
 
@@ -57,3 +90,10 @@ tilemap_layer_path = NodePath("../Ground")
 [node name="TestSpawner" type="Node" parent="."]
 script = ExtResource("5_spawn")
 ysort_container_path = NodePath("../YSortContainer")
+
+[node name="DialogueBox" parent="." instance=ExtResource("6_dlgbox")]
+
+[node name="DialogueController" type="Node" parent="."]
+script = ExtResource("7_dlgctrl")
+dialogue_box_path = NodePath("../DialogueBox")
+interactor_path = NodePath("../YSortContainer/Player/Interactor")
