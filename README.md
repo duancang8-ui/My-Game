@@ -13,9 +13,10 @@
 
 ## 当前阶段
 
-✅ **P1 完成**：Godot 项目骨架 + 2.5D 等距技术验证（[报告](docs/tech-verification-p1/report.md)）
+- ✅ **P1 完成**：Godot 项目骨架 + 2.5D 等距技术验证（[报告](docs/tech-verification-p1/report.md)）
+- ✅ **P2 完成**：对话系统框架（数据 + 逻辑 + UI + 交互 + 示例）（[报告](docs/tech-verification-p2/report.md)）
 
-⏭️ **下一阶段**：P2 — 对话系统框架（对话框 + 选项 + 检定）
+⏭️ **下一阶段**：P3 — 存档/读档基础设施
 
 ## 快速开始
 
