@@ -1,0 +1,32 @@
+# Godot 4 .gitignore — 官方推荐
+.godot/
+.import/
+export.cfg
+export_presets.cfg
+
+# Mono / .NET （我们不用，但保留以防）
+.mono/
+data_*/
+mono_crash.*.json
+
+# macOS / Windows / Linux 系统垃圾
+.DS_Store
+Thumbs.db
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# 视觉助手会话目录
+.superpowers/
+
+# 构建产物
+build/
+exports/
+*.app
+*.exe
+*.x86_64
+*.dmg
+*.zip
