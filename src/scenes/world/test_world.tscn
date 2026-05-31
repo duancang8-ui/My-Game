@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://btestworld1p1"]
+
+[ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
+[ext_resource type="Script" path="res://src/scripts/test/world_builder.gd" id="2_builder"]
+
+[node name="TestWorld" type="Node2D"]
+
+[node name="Ground" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_tileset")
+
+[node name="YSortContainer" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="WorldBuilder" type="Node" parent="."]
+script = ExtResource("2_builder")
+tilemap_layer_path = NodePath("../Ground")
