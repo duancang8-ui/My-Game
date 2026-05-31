@@ -13,7 +13,20 @@
 
 ## 当前阶段
 
-🚧 **P1 进行中**：Godot 项目骨架 + 2.5D 等距技术验证
+✅ **P1 完成**：Godot 项目骨架 + 2.5D 等距技术验证（[报告](docs/tech-verification-p1/report.md)）
+
+⏭️ **下一阶段**：P2 — 对话系统框架（对话框 + 选项 + 检定）
+
+## 快速开始
+
+```bash
+# 跑单元测试（12/12 应该通过）
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . \
+  -s addons/gut/gut_cmdln.gd -gdir=res://tests/unit -gexit
+
+# 运行游戏（test_world.tscn 是 P1 主场景）
+# 在 Godot 编辑器里 F5 启动
+```
 
 ## 开发环境
 
