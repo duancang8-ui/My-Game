@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://btestworld1p1"]
+[gd_scene load_steps=12 format=3 uid="uid://btestworld1p1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="Script" path="res://src/scripts/test/world_builder.gd" id="2_builder"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://ddws0fkvtamqv" path="res://src/scripts/dialogue/dialogue_controller.gd" id="7_dlgctrl"]
 [ext_resource type="Texture2D" uid="uid://bqif0pn0xf5dj" path="res://src/assets/characters/player_placeholder.png" id="8_npc_sprite"]
 [ext_resource type="Script" uid="uid://0ttpp1qr2s2k" path="res://src/scripts/interaction/interactable.gd" id="9_interactable"]
+[ext_resource type="Script" uid="uid://c7ncnem5cd3h1" path="res://src/scripts/test/save_test_keybinds.gd" id="10_savekeys"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_building"]
 size = Vector2(36, 28)
@@ -97,3 +98,7 @@ ysort_container_path = NodePath("../YSortContainer")
 script = ExtResource("7_dlgctrl")
 dialogue_box_path = NodePath("../DialogueBox")
 interactor_path = NodePath("../YSortContainer/Player/Interactor")
+
+[node name="SaveTestKeybinds" type="Node" parent="."]
+script = ExtResource("10_savekeys")
+player_path = NodePath("../YSortContainer/Player")
