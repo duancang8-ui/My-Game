@@ -18,8 +18,11 @@
 - ✅ **P3 完成**：存档/读档基础设施（GameState + SaveSystem + F9/F10）（[报告](docs/tech-verification-p3/report.md)）
 - ✅ **P3.5 完成**：UX Polish（对话锁玩家 + Toast UI + 道城风对话框皮肤）（[报告](docs/tech-verification-p3.5/report.md)）
   - ⏳ 延后：原作台词替换（等用户提供 `docs/source/2789.txt.zip`）
+- ✅ **P4 完成**：「说谎者」第一个生肖游戏关卡 MVS（[报告](docs/tech-verification-p4/report.md)）
+  - 5 NPC 围桌、对话收集线索、投票指认、胜负结算
+  - 现在的 main scene 是 `interview_room.tscn`
 
-⏭️ **下一阶段**：P4 — 第一个生肖游戏关卡（说谎者）
+⏭️ **下一阶段**：P4.5（扩成 10 NPC + 随机靶子）/ P5（场景切换）/ P6（雨后春笋）/ 原作对话批量替换 — 由用户选
 
 ## 测试摘要
 
