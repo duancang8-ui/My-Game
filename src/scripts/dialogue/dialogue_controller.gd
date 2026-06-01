@@ -11,6 +11,7 @@ var _dialogue_box: DialogueBox = null
 var _interactor: PlayerInteractor = null
 var _runner: DialogueRunner = null
 var _active_dialogue_id: String = ""
+var _player_node: Node = null   ## 用于对话期间禁用玩家移动
 
 func _ready() -> void:
     _dialogue_box = get_node_or_null(dialogue_box_path) as DialogueBox
@@ -21,6 +22,7 @@ func _ready() -> void:
     if _interactor == null:
         push_error("DialogueController: PlayerInteractor not found at " + str(interactor_path))
         return
+    _player_node = _interactor.get_parent()  ## PlayerInteractor 的父节点 = Player CharacterBody2D
     _interactor.interactable_entered.connect(_on_interactable_entered)
     _dialogue_box.choice_picked.connect(_on_choice_picked)
     _dialogue_box.continue_pressed.connect(_on_continue_pressed)
@@ -61,6 +63,7 @@ func _start_dialogue(dialogue_id: String) -> void:
     _active_dialogue_id = dialogue_id
     _runner.dialogue_ended.connect(_on_dialogue_ended)
     _dialogue_box.attach_runner(_runner)
+    _set_player_input_enabled(false)   ## 对话期间锁住玩家
     _runner.start(lines, start_id)
 
 func _on_choice_picked(index: int) -> void:
@@ -79,3 +82,14 @@ func _on_dialogue_ended() -> void:
             gs.mark_dialogue_completed(_active_dialogue_id)
         _active_dialogue_id = ""
     _runner = null
+    _set_player_input_enabled(true)   ## 对话结束恢复玩家控制
+
+func _set_player_input_enabled(enabled: bool) -> void:
+    if _player_node == null:
+        return
+    # 暂停 physics_process 即可让 player.gd 的移动循环停下；
+    # velocity 已经在上一帧被赋值，但 move_and_slide 不再调用，玩家会立刻停住
+    _player_node.set_physics_process(enabled)
+    # 同时清掉残余速度，避免恢复时"惯性滑行"
+    if not enabled and _player_node.has_method("set"):
+        _player_node.set("velocity", Vector2.ZERO)
