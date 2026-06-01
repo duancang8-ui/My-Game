@@ -16,8 +16,10 @@
 - ✅ **P1 完成**：Godot 项目骨架 + 2.5D 等距技术验证（[报告](docs/tech-verification-p1/report.md)）
 - ✅ **P2 完成**：对话系统框架（数据 + 逻辑 + UI + 交互 + 示例）（[报告](docs/tech-verification-p2/report.md)）
 - ✅ **P3 完成**：存档/读档基础设施（GameState + SaveSystem + F9/F10）（[报告](docs/tech-verification-p3/report.md)）
+- ✅ **P3.5 完成**：UX Polish（对话锁玩家 + Toast UI + 道城风对话框皮肤）（[报告](docs/tech-verification-p3.5/report.md)）
+  - ⏳ 延后：原作台词替换（等用户提供 `docs/source/2789.txt.zip`）
 
-⏭️ **下一阶段**：P4 — 待用户回来选择（候选：副本框架 / 场景管理器 / 第一个生肖关卡）
+⏭️ **下一阶段**：P4 — 第一个生肖游戏关卡（说谎者）
 
 ## 测试摘要
 
