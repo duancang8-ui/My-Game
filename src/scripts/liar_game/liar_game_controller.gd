@@ -11,7 +11,7 @@ signal vote_submitted(target_id: String, result: int)
 enum State { PLAYING, SUBMITTED }
 enum Result { NONE, WIN, LOSE }
 
-@export var liar_target_id: String = ""   ## 由场景或 Inspector 设置；空则使用 LiarNpcId.LIAR_ID
+@export var liar_target_id: String = ""   ## 测试可覆盖固定靶子；空则在 _ready 时随机生成
 
 var state: int = State.PLAYING
 var last_result: int = Result.NONE
@@ -19,7 +19,7 @@ var last_voted: String = ""
 
 func _ready() -> void:
     if liar_target_id == "":
-        liar_target_id = LiarNpcId.LIAR_ID
+        liar_target_id = LiarNpcId.random_target()
 
 func submit_vote(target_id: String) -> void:
     if state == State.SUBMITTED:

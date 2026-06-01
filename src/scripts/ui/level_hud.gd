@@ -12,6 +12,8 @@ const PANEL_TEX: Texture2D = preload("res://src/assets/ui/dialogue_panel_9slice.
 var _panel: PanelContainer
 var _progress_label: Label
 var _hint_label: Label
+var _sheep_hint_label: RichTextLabel
+var _sheep_hint_text: String = ""
 
 func _ready() -> void:
     layer = 5
@@ -66,6 +68,22 @@ func _build() -> void:
     _hint_label.add_theme_color_override("font_color", Color(0.75, 0.7, 0.65))
     _hint_label.text = hint_text
     vbox.add_child(_hint_label)
+
+    _sheep_hint_label = RichTextLabel.new()
+    _sheep_hint_label.bbcode_enabled = true
+    _sheep_hint_label.fit_content = true
+    _sheep_hint_label.scroll_active = false
+    _sheep_hint_label.custom_minimum_size = Vector2(540, 0)
+    _sheep_hint_label.add_theme_font_size_override("normal_font_size", 13)
+    _sheep_hint_label.add_theme_color_override("default_color", Color(0.95, 0.45, 0.45))
+    _sheep_hint_label.visible = false
+    vbox.add_child(_sheep_hint_label)
+
+func set_sheep_hint(text: String) -> void:
+    _sheep_hint_text = text
+    if _sheep_hint_label != null:
+        _sheep_hint_label.text = text
+        _sheep_hint_label.visible = (text != "")
 
 func _refresh() -> void:
     var gs = get_node_or_null("/root/GameState")

@@ -89,30 +89,52 @@ func register_chen_junnan_intro() -> void:
 # ⚠️ 这些台词是 AI 占位版，等 docs/source/2789.txt.zip 到位后批量替换为 Ch 1~5 原作摘录
 
 func _register_liar_game_dialogues() -> void:
+    # P4.5: NPC 对话改为只做自我介绍 + 一句通用感想（不暗示特定人）
+    # 真正指向靶子的"暗示"由人羊在规则讲完后单独给出（运行时根据随机靶子生成）
     _register_one_liar_npc(
         "liar_chen_junnan", "陈俊南",
         "我叫陈俊南，是个警察。被押来这之前我正在追一个贩毒嫌疑人。",
-        "（盯着林檎看了一会儿）那个女的不太对劲，她回答问题时眼神在飘。"
+        "我做警察十几年了，[color=#b71c1c]这种诡异的房间和山羊面具的家伙，连噩梦里都没见过[/color]。"
     )
     _register_one_liar_npc(
         "liar_qiao_jiajin", "乔家劲",
         "乔家劲，紫荆城混的。在这鬼地方多说一句都是浪费力气。",
-        "[color=#8b8b8b]（沉默了几秒）[/color]……苏闪。他全程在听别人说话，自己什么都没暴露。"
+        "[color=#8b8b8b]（沉默了几秒）[/color]……谁是说谎者？老子哪知道。投票就是了。"
     )
     _register_one_liar_npc(
         "liar_zhang_lijuan", "张丽娟",
         "我叫张丽娟，做技术的。被抓来时我正在公司加班。",
-        "陈警官说话很坦白，但乔先生那种人，[color=#b71c1c]在江湖上撒谎是本能[/color]。"
+        "我看了看每个人……[color=#888]坦白说，我谁都不敢相信[/color]。"
     )
     _register_one_liar_npc(
         "liar_su_shan", "苏闪",
         "苏闪，长沙刑警支队技术员。我刚才在记每个人说话时的微表情。",
-        "陈警官有几处停顿不自然。但林檎……她[color=#b71c1c]给我的感觉完全不像普通人[/color]。"
+        "数据不够。我能告诉你的是：[color=#b71c1c]这里没有人在「表面上」说谎[/color]——也就是说，靶子是被规则指定的。"
     )
     _register_one_liar_npc(
         "liar_lin_qin", "林檎",
         "我叫林檎，心理咨询师。被押来这之前刚做完一个家暴受害人案例。",
-        "[color=#888]（轻轻一笑）[/color]我做的是倾听者的工作，不太适合评价别人是否在说谎呢。"
+        "[color=#888]（轻轻一笑）[/color]我做的是倾听者的工作，不太适合评价别人。\n至于谁是说谎者……[color=#b71c1c]或许人羊说的「规则」本身才是谜底[/color]。"
+    )
+    _register_one_liar_npc(
+        "liar_han_yimo", "韩一墨",
+        "韩一墨。",
+        "[color=#888]……[/color]"
+    )
+    _register_one_liar_npc(
+        "liar_zhang_chenze", "章晨泽",
+        "我是章晨泽，律师。被抓来时我正在准备一个集体诉讼。",
+        "「靶子」是规则指定的概念——这意味着任何人都可能是。[color=#b71c1c]我们其实在玩一个无解的游戏[/color]。"
+    )
+    _register_one_liar_npc(
+        "liar_zhao_haibo", "赵海博",
+        "赵海博，神经外科医生。我对脑科很专业，但对这种「游戏」是外行。",
+        "如果非要我说……[color=#b71c1c]我注意人羊给暗示的时候，他眼神瞟过的方向[/color]。也许那才是关键。"
+    )
+    _register_one_liar_npc(
+        "liar_xiao_ran", "肖冉",
+        "肖冉。我是幼儿园老师。被抓来这之前我在……做一些不太能说的事。",
+        "[color=#888]（她突然停下，目光转向地面）[/color]……每个人都有秘密，不是吗？"
     )
 
 func _register_one_liar_npc(dialogue_id: String, speaker_name: String, intro_text: String, hint_text: String) -> void:

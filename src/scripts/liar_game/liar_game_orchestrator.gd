@@ -84,8 +84,28 @@ func _on_rules_done() -> void:
 func _enable_gameplay() -> void:
     if _hud != null:
         _hud.visible = true
+    _show_sheep_hint()
     if Toast != null:
-        Toast.show_info("和 5 个人都谈谈，然后到桌前提交答案。")
+        Toast.show_info("和 9 个人都谈谈，然后到桌前提交答案。")
+
+func _show_sheep_hint() -> void:
+    # 人羊在规则讲完后，给一句指向真靶子的隐晦暗示
+    # 永久显示在 HUD 副位置（Toast 2 秒会消失，怕玩家错过）
+    var target: String = ""
+    if _ctrl != null:
+        target = _ctrl.liar_target_id
+    if target == "":
+        return
+    var hints: Array = [
+        "[color=#ff9999]（人羊低声说）我的「目光」碰巧停在了穿 [color=#ffd93d]%s[/color] 衣服的那位身上……[/color]" % LiarNpcId.color_name_of(target),
+        "[color=#ff9999]（人羊压低声音）你也许该留意 [color=#ffd93d]%s[/color]。[/color]" % LiarNpcId.trait_of(target),
+        "[color=#ff9999]（人羊不动声色）规则……总会指向最不像「说谎者」的那个人。比如 [color=#ffd93d]%s 衣服的那位[/color]。[/color]" % LiarNpcId.color_name_of(target),
+    ]
+    var rng := RandomNumberGenerator.new()
+    rng.randomize()
+    var hint: String = hints[rng.randi() % hints.size()]
+    if _hud != null and _hud.has_method("set_sheep_hint"):
+        _hud.set_sheep_hint(hint)
 
 func _connect_all_interactables(node: Node) -> void:
     if node is Interactable:

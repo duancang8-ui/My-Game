@@ -6,9 +6,21 @@ var ctrl: LiarGameController
 
 func before_each() -> void:
     ctrl = ControllerScript.new()
-    ctrl.liar_target_id = LiarNpcId.LIN_QIN  # 固定靶子
+    ctrl.liar_target_id = LiarNpcId.LIN_QIN  # 固定靶子用于测试
     add_child_autofree(ctrl)
     ctrl._ready()
+
+func test_random_target_picks_from_all_npcs() -> void:
+    var picked: String = LiarNpcId.random_target()
+    assert_true(LiarNpcId.ALL.has(picked), "随机靶子必须是 9 名 NPC 之一")
+
+func test_default_random_target_when_empty() -> void:
+    # 当 export 字段为空时，_ready 应随机生成
+    var c: LiarGameController = ControllerScript.new()
+    c.liar_target_id = ""
+    add_child_autofree(c)
+    c._ready()
+    assert_true(LiarNpcId.ALL.has(c.liar_target_id), "_ready 后 liar_target_id 应该是有效 NPC id")
 
 func test_default_state_is_playing() -> void:
     assert_eq(ctrl.state, LiarGameController.State.PLAYING)

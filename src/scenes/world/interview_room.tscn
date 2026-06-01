@@ -28,8 +28,8 @@ script = ExtResource("5_builder")
 ground_layer_path = NodePath("../Ground")
 ysort_path = NodePath("../YSortContainer")
 table_position = Vector2(400, 280)
-seat_radius = 140.0
-submit_marker_position = Vector2(540, 380)
+seat_radius = 170.0
+submit_marker_position = Vector2(640, 380)
 
 [node name="DialogueBox" parent="." instance=ExtResource("3_dlgbox")]
 
@@ -62,7 +62,7 @@ lock_player = true
 
 [node name="LevelHUD" type="CanvasLayer" parent="."]
 script = ExtResource("11_hud")
-npc_dialogue_ids = Array[String](["liar_chen_junnan", "liar_qiao_jiajin", "liar_zhang_lijuan", "liar_su_shan", "liar_lin_qin"])
+npc_dialogue_ids = Array[String](["liar_chen_junnan", "liar_qiao_jiajin", "liar_zhang_lijuan", "liar_su_shan", "liar_lin_qin", "liar_han_yimo", "liar_zhang_chenze", "liar_zhao_haibo", "liar_xiao_ran"])
 
 [node name="LiarGameController" type="Node" parent="."]
 script = ExtResource("6_ctrl")
