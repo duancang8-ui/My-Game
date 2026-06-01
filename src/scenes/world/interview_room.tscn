@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://binterviewroom1"]
+[gd_scene load_steps=12 format=3 uid="uid://binterviewroom1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://2foaf0jt400l" path="res://src/scripts/liar_game/liar_game_orchestrator.gd" id="7_orch"]
 [ext_resource type="Script" uid="uid://d2lqtadja4kaq" path="res://src/scripts/ui/vote_panel.gd" id="8_vote"]
 [ext_resource type="Script" uid="uid://lwsydnvf4tdr" path="res://src/scripts/ui/result_screen.gd" id="9_result"]
+[ext_resource type="Script" uid="uid://hw16wwn6m6js" path="res://src/scripts/cutscene/cutscene_controller.gd" id="10_cutscene"]
+[ext_resource type="Script" uid="uid://rljnyxj01nwo" path="res://src/scripts/ui/level_hud.gd" id="11_hud"]
 
 [node name="InterviewRoom" type="Node2D"]
 
@@ -42,6 +44,26 @@ script = ExtResource("8_vote")
 [node name="ResultScreen" type="CanvasLayer" parent="."]
 script = ExtResource("9_result")
 
+[node name="OpeningCutscene" type="Node" parent="."]
+script = ExtResource("10_cutscene")
+dialogue_box_path = NodePath("../DialogueBox")
+player_path = NodePath("../YSortContainer/Player")
+dialogue_id = "liar_opening_cutscene"
+auto_start = false
+lock_player = true
+
+[node name="SheepRulesCutscene" type="Node" parent="."]
+script = ExtResource("10_cutscene")
+dialogue_box_path = NodePath("../DialogueBox")
+player_path = NodePath("../YSortContainer/Player")
+dialogue_id = "liar_sheep_rules"
+auto_start = false
+lock_player = true
+
+[node name="LevelHUD" type="CanvasLayer" parent="."]
+script = ExtResource("11_hud")
+npc_dialogue_ids = Array[String](["liar_chen_junnan", "liar_qiao_jiajin", "liar_zhang_lijuan", "liar_su_shan", "liar_lin_qin"])
+
 [node name="LiarGameController" type="Node" parent="."]
 script = ExtResource("6_ctrl")
 
@@ -51,3 +73,6 @@ controller_path = NodePath("../LiarGameController")
 vote_panel_path = NodePath("../VotePanel")
 result_screen_path = NodePath("../ResultScreen")
 player_path = NodePath("../YSortContainer/Player")
+cutscene_path = NodePath("../OpeningCutscene")
+rules_cutscene_path = NodePath("../SheepRulesCutscene")
+level_hud_path = NodePath("../LevelHUD")

@@ -10,11 +10,17 @@ extends Node
 @export var vote_panel_path: NodePath = NodePath("../VotePanel")
 @export var result_screen_path: NodePath = NodePath("../ResultScreen")
 @export var player_path: NodePath = NodePath("../YSortContainer/Player")
+@export var cutscene_path: NodePath = NodePath("../OpeningCutscene")
+@export var rules_cutscene_path: NodePath = NodePath("../SheepRulesCutscene")
+@export var level_hud_path: NodePath = NodePath("../LevelHUD")
 
 var _ctrl: LiarGameController
 var _panel: Node
 var _result_screen: Node
 var _player: Node
+var _opening: Node
+var _rules: Node
+var _hud: CanvasLayer
 var _player_initial_position: Vector2 = Vector2.ZERO
 var _player_initial_modulate: Color = Color.WHITE
 
@@ -39,8 +45,47 @@ func _ready() -> void:
             _result_screen.load_save_pressed.connect(_on_load_save)
         if _result_screen.has_signal("continue_pressed"):
             _result_screen.continue_pressed.connect(_on_continue)
+
+    _opening = get_node_or_null(cutscene_path)
+    _rules = get_node_or_null(rules_cutscene_path)
+    _hud = get_node_or_null(level_hud_path) as CanvasLayer
+
     # 监听整个场景树中的所有 Interactable
     _connect_all_interactables(get_tree().root)
+
+    # 暂时禁用 HUD 直到过场结束
+    if _hud != null:
+        _hud.visible = false
+
+    # 启动开场过场流程：开场 → 张强规则 → 解锁玩家 + 显示 HUD
+    call_deferred("_start_intro_flow")
+
+func _start_intro_flow() -> void:
+    if _opening == null and _rules == null:
+        _enable_gameplay()
+        return
+    if _opening != null:
+        _opening.finished.connect(_on_opening_done, CONNECT_ONE_SHOT)
+        _opening.play("liar_opening_cutscene")
+    elif _rules != null:
+        _rules.finished.connect(_on_rules_done, CONNECT_ONE_SHOT)
+        _rules.play("liar_sheep_rules")
+
+func _on_opening_done() -> void:
+    if _rules != null:
+        _rules.finished.connect(_on_rules_done, CONNECT_ONE_SHOT)
+        _rules.play("liar_sheep_rules")
+    else:
+        _enable_gameplay()
+
+func _on_rules_done() -> void:
+    _enable_gameplay()
+
+func _enable_gameplay() -> void:
+    if _hud != null:
+        _hud.visible = true
+    if Toast != null:
+        Toast.show_info("和 5 个人都谈谈，然后到桌前提交答案。")
 
 func _connect_all_interactables(node: Node) -> void:
     if node is Interactable:
