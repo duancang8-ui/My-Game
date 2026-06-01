@@ -10,6 +10,7 @@ var player_position: Vector2 = Vector2.ZERO
 var met_npcs: PackedStringArray = PackedStringArray()
 var completed_dialogues: PackedStringArray = PackedStringArray()
 var dao_count: int = 0
+var current_scene_path: String = ""    ## 当前所在场景（用于存档恢复时跳回正确场景）
 
 func reset() -> void:
     current_cycle = 1
@@ -18,6 +19,7 @@ func reset() -> void:
     met_npcs = PackedStringArray()
     completed_dialogues = PackedStringArray()
     dao_count = 0
+    current_scene_path = ""
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
@@ -42,6 +44,7 @@ func to_dict() -> Dictionary:
         "met_npcs": Array(met_npcs),
         "completed_dialogues": Array(completed_dialogues),
         "dao_count": dao_count,
+        "current_scene_path": current_scene_path,
     }
 
 func from_dict(data: Dictionary) -> void:
@@ -52,3 +55,4 @@ func from_dict(data: Dictionary) -> void:
     met_npcs = PackedStringArray(data.get("met_npcs", []))
     completed_dialogues = PackedStringArray(data.get("completed_dialogues", []))
     dao_count = int(data.get("dao_count", 0))
+    current_scene_path = String(data.get("current_scene_path", ""))

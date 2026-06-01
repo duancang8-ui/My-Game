@@ -12,6 +12,7 @@ func test_default_values() -> void:
     assert_eq(GameState.met_npcs.size(), 0)
     assert_eq(GameState.completed_dialogues.size(), 0)
     assert_eq(GameState.dao_count, 0)
+    assert_eq(GameState.current_scene_path, "")
 
 func test_can_set_player_position() -> void:
     GameState.player_position = Vector2(120, 240)
@@ -46,9 +47,11 @@ func test_to_dict_and_from_dict_roundtrip() -> void:
     GameState.mark_npc_met("乔家劲")
     GameState.mark_dialogue_completed("test_d_01")
     GameState.add_dao(42)
+    GameState.current_scene_path = "res://src/scenes/world/daocheng_main.tscn"
     var dict: Dictionary = GameState.to_dict()
     GameState.reset()
     assert_eq(GameState.current_cycle, 1)
+    assert_eq(GameState.current_scene_path, "")
     GameState.from_dict(dict)
     assert_eq(GameState.current_cycle, 3)
     assert_eq(GameState.current_day, 5)
@@ -56,3 +59,4 @@ func test_to_dict_and_from_dict_roundtrip() -> void:
     assert_true(GameState.met_npcs.has("乔家劲"))
     assert_true(GameState.completed_dialogues.has("test_d_01"))
     assert_eq(GameState.dao_count, 42)
+    assert_eq(GameState.current_scene_path, "res://src/scenes/world/daocheng_main.tscn")
