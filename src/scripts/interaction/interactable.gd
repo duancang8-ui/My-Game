@@ -16,6 +16,7 @@ enum Type {
 
 @export var interaction_type: Type = Type.NONE
 @export var dialogue_id: String = ""              ## type == DIALOGUE 时使用
+@export var scene_path: String = ""               ## type == SCENE_CHANGE 时使用（目标 .tscn 路径）
 @export var prompt_text: String = "[E] 互动"       ## 玩家附近提示文字（P2 占位用）
 
 func interact() -> void:
