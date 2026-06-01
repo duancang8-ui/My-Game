@@ -1,8 +1,8 @@
-class_name Toast
 extends CanvasLayer
 
 # 屏幕右下角通知弹窗（"已存档" / "已读档" / "失败" 等）
-# 用法：autoload 后调用 Toast.show_info("...") / show_success("...") / show_error("...")
+# 注册为 autoload "Toast"——通过单例名访问（不能用 class_name 因为会与 autoload 名冲突）
+# 用法：Toast.show_info("...") / show_success("...") / show_error("...")
 # 多条同时触发会排队（FIFO），避免遮挡
 
 const SHOW_DURATION: float = 2.0   ## 完整显示时间（秒）
