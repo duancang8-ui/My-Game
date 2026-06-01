@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://binterviewroom1"]
+[gd_scene load_steps=10 format=3 uid="uid://binterviewroom1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://cyvsrqyho785c" path="res://src/scripts/liar_game/liar_game_controller.gd" id="6_ctrl"]
 [ext_resource type="Script" uid="uid://2foaf0jt400l" path="res://src/scripts/liar_game/liar_game_orchestrator.gd" id="7_orch"]
 [ext_resource type="Script" uid="uid://d2lqtadja4kaq" path="res://src/scripts/ui/vote_panel.gd" id="8_vote"]
+[ext_resource type="Script" uid="uid://lwsydnvf4tdr" path="res://src/scripts/ui/result_screen.gd" id="9_result"]
 
 [node name="InterviewRoom" type="Node2D"]
 
@@ -38,6 +39,9 @@ interactor_path = NodePath("../YSortContainer/Player/Interactor")
 [node name="VotePanel" type="CanvasLayer" parent="."]
 script = ExtResource("8_vote")
 
+[node name="ResultScreen" type="CanvasLayer" parent="."]
+script = ExtResource("9_result")
+
 [node name="LiarGameController" type="Node" parent="."]
 script = ExtResource("6_ctrl")
 
@@ -45,4 +49,5 @@ script = ExtResource("6_ctrl")
 script = ExtResource("7_orch")
 controller_path = NodePath("../LiarGameController")
 vote_panel_path = NodePath("../VotePanel")
+result_screen_path = NodePath("../ResultScreen")
 player_path = NodePath("../YSortContainer/Player")
