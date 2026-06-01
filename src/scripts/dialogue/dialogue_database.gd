@@ -19,6 +19,7 @@ func _ensure_initialized() -> void:
 
 func _register_builtin_dialogues() -> void:
     register_chen_junnan_intro()
+    _register_liar_game_dialogues()
 
 func register(dialogue_id: String, lines: Array, start_id: String) -> void:
     _dialogues_by_id[dialogue_id] = lines
@@ -81,3 +82,54 @@ func register_chen_junnan_intro() -> void:
     l3b.auto_next_line_id = ""  # 结束
 
     register("chen_junnan_intro", [l1, l2a, l2b, l3, l3b], "intro_01")
+
+# === P4: 「说谎者」关卡 5 名 NPC 的占位对话 ===
+# ⚠️ 这些台词是 AI 占位版，等 docs/source/2789.txt.zip 到位后批量替换为 Ch 1~5 原作摘录
+
+func _register_liar_game_dialogues() -> void:
+    _register_one_liar_npc(
+        "liar_chen_junnan", "陈俊南",
+        "我叫陈俊南，是个警察。被押来这之前我正在追一个贩毒嫌疑人。",
+        "（盯着林檎看了一会儿）那个女的不太对劲，她回答问题时眼神在飘。"
+    )
+    _register_one_liar_npc(
+        "liar_qiao_jiajin", "乔家劲",
+        "乔家劲，紫荆城混的。在这鬼地方多说一句都是浪费力气。",
+        "[color=#8b8b8b]（沉默了几秒）[/color]……苏闪。他全程在听别人说话，自己什么都没暴露。"
+    )
+    _register_one_liar_npc(
+        "liar_zhang_lijuan", "张丽娟",
+        "我叫张丽娟，做技术的。被抓来时我正在公司加班。",
+        "陈警官说话很坦白，但乔先生那种人，[color=#b71c1c]在江湖上撒谎是本能[/color]。"
+    )
+    _register_one_liar_npc(
+        "liar_su_shan", "苏闪",
+        "苏闪，长沙刑警支队技术员。我刚才在记每个人说话时的微表情。",
+        "陈警官有几处停顿不自然。但林檎……她[color=#b71c1c]给我的感觉完全不像普通人[/color]。"
+    )
+    _register_one_liar_npc(
+        "liar_lin_qin", "林檎",
+        "我叫林檎，心理咨询师。被押来这之前刚做完一个家暴受害人案例。",
+        "[color=#888]（轻轻一笑）[/color]我做的是倾听者的工作，不太适合评价别人是否在说谎呢。"
+    )
+
+func _register_one_liar_npc(dialogue_id: String, speaker_name: String, intro_text: String, hint_text: String) -> void:
+    var l1: DialogueLine = DialogueLine.new()
+    l1.line_id = dialogue_id + "_01"
+    l1.speaker_name = speaker_name
+    l1.text = intro_text
+    var c_ask: DialogueChoice = DialogueChoice.new()
+    c_ask.label = "你怀疑谁是说谎者？"
+    c_ask.next_line_id = dialogue_id + "_02"
+    var c_leave: DialogueChoice = DialogueChoice.new()
+    c_leave.label = "（先去问问别人）"
+    c_leave.ends_dialogue = true
+    l1.choices = [c_ask, c_leave] as Array[DialogueChoice]
+
+    var l2: DialogueLine = DialogueLine.new()
+    l2.line_id = dialogue_id + "_02"
+    l2.speaker_name = speaker_name
+    l2.text = hint_text
+    l2.auto_next_line_id = ""
+
+    register(dialogue_id, [l1, l2], dialogue_id + "_01")
