@@ -11,6 +11,7 @@ enum Type {
     DIALOGUE,       ## 触发对话（携带 dialogue_id）
     PICKUP,         ## 拾取物品（后续 plan 实装）
     SCENE_CHANGE,   ## 切换场景（后续 plan 实装）
+    VOTE,           ## 触发关卡投票面板（用于「说谎者」等）
 }
 
 @export var interaction_type: Type = Type.NONE
