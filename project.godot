@@ -28,6 +28,7 @@ window/stretch/aspect="expand"
 GameState="*res://src/scripts/save/game_state.gd"
 SaveSystem="*res://src/scripts/save/save_system.gd"
 DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
+Toast="*res://src/scripts/ui/toast.gd"
 
 [editor_plugins]
 

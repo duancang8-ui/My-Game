@@ -24,13 +24,19 @@ func _capture_state_and_save() -> void:
             QUICK_SLOT, GameState.current_cycle, GameState.current_day,
             GameState.player_position, GameState.dao_count
         ])
+        if Toast != null:
+            Toast.show_success("已存档 ✓  (第 %d 轮 · 第 %d 天)" % [GameState.current_cycle, GameState.current_day])
     else:
         push_error("[SaveSystem] Quick-save failed")
+        if Toast != null:
+            Toast.show_error("存档失败")
 
 func _load_and_apply_state() -> void:
     var ok: bool = SaveSystem.load_from_slot(QUICK_SLOT)
     if not ok:
         push_warning("[SaveSystem] No save in slot %d" % QUICK_SLOT)
+        if Toast != null:
+            Toast.show_info("没有可读取的存档")
         return
     var player: Node = get_node_or_null(player_path)
     if player != null:
@@ -39,3 +45,5 @@ func _load_and_apply_state() -> void:
         QUICK_SLOT, GameState.current_cycle, GameState.current_day,
         GameState.player_position, GameState.dao_count
     ])
+    if Toast != null:
+        Toast.show_success("已读取存档 ✓")
