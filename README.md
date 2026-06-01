@@ -20,9 +20,11 @@
   - ⏳ 延后：原作台词替换（等用户提供 `docs/source/2789.txt.zip`）
 - ✅ **P4 完成**：「说谎者」第一个生肖游戏关卡 MVS（[报告](docs/tech-verification-p4/report.md)）
   - 5 NPC 围桌、对话收集线索、投票指认、胜负结算
-  - 现在的 main scene 是 `interview_room.tscn`
+- ✅ **P4.1 完成**：叙事铺垫（开场过场 + 张强宣布规则 + 顶部 HUD 进度）
+- ✅ **P5 完成**：场景切换系统（SceneManager + 黑屏 fade + 双向门）（[报告](docs/tech-verification-p5/report.md)）
+  - 胜利后房间出现"出口 · 道城"门 → 切到 daocheng → 返回门切回
 
-⏭️ **下一阶段**：P4.5（扩成 10 NPC + 随机靶子）/ P5（场景切换）/ P6（雨后春笋）/ 原作对话批量替换 — 由用户选
+⏭️ **下一阶段**：P5.5（跨场景玩家持久化）/ P6（雨后春笋）/ P4.5（扩说谎者）/ 原作对话批量替换 — 由用户选
 
 ## 美术策略
 

@@ -116,8 +116,9 @@ func _on_vote_submitted(target_id: String, result: int) -> void:
             if _result_screen != null:
                 _result_screen.show_win(
                     "识破了！",
-                    "你成功识破了「说谎者」—— %s。\n人羊掀开山羊面具，露出诡异的微笑：'有意思的小齐夏……'" % target_name
+                    "你成功识破了「说谎者」—— %s。\n人羊掀开山羊面具，露出诡异的微笑：'有意思的小齐夏……'\n\n[房间侧面的墙缓缓打开，露出通往「道城」的大门]" % target_name
                 )
+            _spawn_exit_to_daocheng()
         LiarGameController.Result.LOSE:
             if Toast != null:
                 Toast.show_error("失败！%s 不是说谎者。" % target_name)
@@ -175,4 +176,44 @@ func _on_load_save() -> void:
 func _on_continue() -> void:
     # WIN 后玩家可以继续在房间里走动（关卡未"重置"，submit 仍是 SUBMITTED）
     if Toast != null:
-        Toast.show_info("（可继续探索房间；按 F9 存档保留进度）")
+        Toast.show_info("（看到房间一侧的蓝色光门了吗？按 E 走出去）")
+
+func _spawn_exit_to_daocheng() -> void:
+    # 胜利后在房间一侧 spawn 通往道城的门
+    var ysort: Node = get_node_or_null("../YSortContainer")
+    if ysort == null:
+        return
+    var interactable_script: Script = load("res://src/scripts/interaction/interactable.gd")
+    var door: Node2D = Node2D.new()
+    door.name = "ExitDoor"
+    door.position = Vector2(680, 280)   ## 房间右侧
+
+    var sprite: Sprite2D = Sprite2D.new()
+    sprite.texture = preload("res://src/assets/characters/submit_marker.png")
+    sprite.modulate = Color(0.5, 0.85, 1.0, 1.0)   ## 蓝色光门
+    sprite.scale = Vector2(1.5, 1.5)
+    door.add_child(sprite)
+
+    var label: Label = Label.new()
+    label.text = "[出口 · 道城]"
+    label.position = Vector2(-40, 20)
+    label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0, 1.0))
+    label.add_theme_font_size_override("font_size", 11)
+    door.add_child(label)
+
+    var inter: Area2D = Area2D.new()
+    inter.name = "Interactable"
+    inter.set_script(interactable_script)
+    inter.collision_layer = 2
+    inter.collision_mask = 0
+    inter.set("interaction_type", 3)   ## SCENE_CHANGE
+    inter.set("scene_path", "res://src/scenes/world/daocheng_main.tscn")
+    inter.set("prompt_text", "[E] 进入道城")
+    var ishape: CollisionShape2D = CollisionShape2D.new()
+    var icirc: CircleShape2D = CircleShape2D.new()
+    icirc.radius = 32
+    ishape.shape = icirc
+    inter.add_child(ishape)
+    door.add_child(inter)
+
+    ysort.add_child(door)
