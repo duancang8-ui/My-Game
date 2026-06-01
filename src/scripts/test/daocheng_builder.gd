@@ -19,6 +19,7 @@ const SUBMIT_TEX: Texture2D = preload("res://src/assets/characters/submit_marker
 func _ready() -> void:
     _build_ground()
     _spawn_return_door()
+    _spawn_rainy_field_door()
 
 func _build_ground() -> void:
     var ground: TileMapLayer = get_node_or_null(ground_layer_path) as TileMapLayer
@@ -68,6 +69,46 @@ func _spawn_return_door() -> void:
     inter.set("interaction_type", 3)   ## Interactable.Type.SCENE_CHANGE
     inter.set("scene_path", return_target)
     inter.set("prompt_text", "[E] 返回面试房间")
+    var ishape: CollisionShape2D = CollisionShape2D.new()
+    var icirc: CircleShape2D = CircleShape2D.new()
+    icirc.radius = 32
+    ishape.shape = icirc
+    inter.add_child(ishape)
+    door.add_child(inter)
+
+    ysort.add_child(door)
+
+func _spawn_rainy_field_door() -> void:
+    ## 通往雨地的门（红色光球）
+    var ysort: Node2D = get_node_or_null(ysort_path) as Node2D
+    if ysort == null:
+        return
+    var interactable_script: Script = load("res://src/scripts/interaction/interactable.gd")
+    var door: Node2D = Node2D.new()
+    door.name = "RainyFieldDoor"
+    door.position = Vector2(150, 200)   ## 道城左上区域
+
+    var sprite: Sprite2D = Sprite2D.new()
+    sprite.texture = SUBMIT_TEX
+    sprite.modulate = Color(1.0, 0.6, 0.4, 1.0)   ## 橙红色（"雨地"暗示）
+    sprite.scale = Vector2(1.3, 1.3)
+    door.add_child(sprite)
+
+    var label: Label = Label.new()
+    label.text = "[雨地 · 人狗游戏]"
+    label.position = Vector2(-44, 16)
+    label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.6))
+    label.add_theme_font_size_override("font_size", 11)
+    door.add_child(label)
+
+    var inter: Area2D = Area2D.new()
+    inter.name = "Interactable"
+    inter.set_script(interactable_script)
+    inter.collision_layer = 2
+    inter.collision_mask = 0
+    inter.set("interaction_type", 3)
+    inter.set("scene_path", "res://src/scenes/world/rainy_field.tscn")
+    inter.set("prompt_text", "[E] 进入雨地（人狗游戏）")
     var ishape: CollisionShape2D = CollisionShape2D.new()
     var icirc: CircleShape2D = CircleShape2D.new()
     icirc.radius = 32

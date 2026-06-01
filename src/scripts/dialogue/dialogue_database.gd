@@ -22,6 +22,7 @@ func _register_builtin_dialogues() -> void:
     _register_liar_game_dialogues()
     _register_liar_opening_cutscene()
     _register_liar_sheep_rules()
+    _register_rainy_field_intro()
 
 func register(dialogue_id: String, lines: Array, start_id: String) -> void:
     _dialogues_by_id[dialogue_id] = lines
@@ -227,3 +228,26 @@ func _speaker_line(id: String, speaker: String, text: String) -> DialogueLine:
     l.speaker_name = speaker
     l.text = text
     return l
+
+# === P6: 雨后春笋（人狗）入场过场 ===
+
+func _register_rainy_field_intro() -> void:
+    var lines: Array[DialogueLine] = []
+
+    lines.append(_narration("rainy_intro_01",
+        "踩着泥泞的地面，你被一阵雨声拽过来。"))
+    lines.append(_narration("rainy_intro_02",
+        "[color=#888]雨水砸在皮肤上，每一滴都带着不安。[/color]\n眼前是一块湿漉漉的空地，中央摆着一张古怪的圆桌。"))
+    lines.append(_speaker_line("rainy_intro_03", "人狗",
+        "[color=#b71c1c]汪——[/color]\n（一只戴着狗面具的人四肢着地，慢慢直起身来）\n欢迎来玩「雨后春笋」。"))
+    lines.append(_speaker_line("rainy_intro_04", "人狗",
+        "规则简单：[color=#ffd93d]按 [E] 旋转这张桌子[/color]，转够[color=#ffd93d] 100 圈[/color]，「春笋」就会长出来——一种可以挡住天上飞来鱼叉的盾牌。"))
+    lines.append(_speaker_line("rainy_intro_05", "人狗",
+        "[color=#b71c1c]时间，30 秒。[/color]\n转不够 100 圈，你就会被鱼叉穿透。\n（它咧嘴一笑，露出狗一样的牙齿）"))
+    lines.append(_narration("rainy_intro_06",
+        "[color=#b71c1c]——头顶传来鱼叉破空的呼啸。[/color]\n你迅速冲到桌子旁——是时候转起来了。"))
+
+    for i in range(lines.size() - 1):
+        lines[i].auto_next_line_id = lines[i + 1].line_id
+
+    register("rainy_field_intro", lines, lines[0].line_id)
