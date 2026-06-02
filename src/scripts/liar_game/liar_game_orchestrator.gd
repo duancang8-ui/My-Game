@@ -200,6 +200,23 @@ func _try_consume_defense_charm() -> bool:
     call_deferred("_on_retry")
     return true
 
+# S3 · 桃木防御符在雨后春笋 phase 2 也生效（只重启转桌，不重玩说谎者）
+func _try_consume_defense_charm_phase2() -> bool:
+    if GameState == null or not GameState.has_method("has_item"):
+        return false
+    if not GameState.has_item("item_defense_charm"):
+        return false
+    GameState.remove_item("item_defense_charm", 1)
+    if Toast != null:
+        Toast.show_success("桃木符挡住了鱼叉 ✓  再转一次")
+    if AudioManager != null:
+        AudioManager.play_sfx("item_use")
+    # 重启 rotate controller（不重启整个说谎者关卡）
+    if _rotate_ctrl != null:
+        _rotate_ctrl.reset()
+        _rotate_ctrl.start_game()
+    return true
+
 func _play_win_cinematic_then_result() -> void:
     if Toast != null:
         Toast.show_success("纸上写着「人羊」—— 九份答案完全一致 ✓")
@@ -284,6 +301,9 @@ func _on_rotate_time_changed(time_left: float) -> void:
         _rotate_hud.update_time(time_left)
 
 func _on_rotate_ended(result: int) -> void:
+    # S3：桃木防御符也覆盖雨后春笋 phase 2 失败
+    if result == RotateGameController.Result.LOSE and _try_consume_defense_charm_phase2():
+        return
     if _rotate_hud != null:
         _rotate_hud.visible = false
     if result == RotateGameController.Result.WIN:

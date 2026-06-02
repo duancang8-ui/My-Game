@@ -92,6 +92,9 @@ func _refresh_door_dialogue_id() -> void:
 		_npc_door.dialogue_id = "rat_door_talk"
 
 func _on_game_ended(result: int) -> void:
+	# S3：桃木防御符在仓库关也生效（LOSE 时消耗 1 个 → 关卡重启）
+	if result == RatGameController.Result.LOSE and _try_consume_defense_charm():
+		return
 	if _hud != null:
 		_hud.visible = false
 	if _ctrl != null:
@@ -125,3 +128,79 @@ func _on_ending_done() -> void:
 	var sm = get_node_or_null("/root/SceneManager")
 	if sm != null and sm.has_method("change_to"):
 		sm.change_to(return_scene)
+
+# ===== S3 · 道具效果覆盖到人鼠关 =====
+
+# 桃木防御符：LOSE 时消耗 1 个 → 关卡重启
+func _try_consume_defense_charm() -> bool:
+	if GameState == null or not GameState.has_method("has_item"):
+		return false
+	if not GameState.has_item("item_defense_charm"):
+		return false
+	GameState.remove_item("item_defense_charm", 1)
+	if Toast != null:
+		Toast.show_success("桃木符替你挡了一次 ✓  仓库重置")
+	if AudioManager != null:
+		AudioManager.play_sfx("item_use")
+	# 重启：重置计时 + 重置 controller + 重新启动
+	if _ctrl != null:
+		_ctrl.reset()
+		_ctrl.start_game()
+		_ctrl.set("auto_tick", true)
+	if _hud != null:
+		_hud.visible = true
+		if _hud.has_method("update_time"):
+			_hud.update_time(_ctrl.time_limit)
+	return true
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _ctrl == null or _ctrl.state != RatGameController.State.PLAYING:
+		return
+	if not (event is InputEventKey):
+		return
+	var k := event as InputEventKey
+	if not k.pressed or k.echo:
+		return
+	if k.keycode == KEY_C:
+		_try_use_clue_bag()
+		get_viewport().set_input_as_handled()
+	elif k.keycode == KEY_X:
+		_try_use_smell_note()
+		get_viewport().set_input_as_handled()
+
+# 线索袋：消耗 1 → 直接揭示「仓鼠协会贴纸」线索 → 解锁人鼠 NPC 的 v2 对话
+func _try_use_clue_bag() -> void:
+	if GameState == null or not GameState.has_method("has_item"):
+		return
+	if not GameState.has_item("item_clue_bag"):
+		if Toast != null:
+			Toast.show_error("你没有「线索袋」")
+		return
+	if GameState.has_observed(RAT_CLUE_ID):
+		if Toast != null:
+			Toast.show_info("线索已经摸清了")
+		return
+	GameState.remove_item("item_clue_bag", 1)
+	GameState.mark_observed(RAT_CLUE_ID)
+	_refresh_door_dialogue_id()   # 立即解锁 v2「摸口袋」选项
+	if Toast != null:
+		Toast.show_success("线索袋打开了 ✓  仓鼠的习惯——把东西藏在颊袋")
+	if AudioManager != null:
+		AudioManager.play_sfx("item_use")
+
+# 灵闻笔记：消耗 1 → 直接 Toast 指明「她口袋鼓鼓的」+ 解锁 v2
+func _try_use_smell_note() -> void:
+	if GameState == null or not GameState.has_method("has_item"):
+		return
+	if not GameState.has_item("item_smell_note"):
+		if Toast != null:
+			Toast.show_error("你没有「灵闻笔记」")
+		return
+	GameState.remove_item("item_smell_note", 1)
+	# 灵闻笔记在这里也起到"揭线索"作用，标记观察点同时切对话 id
+	GameState.mark_observed(RAT_CLUE_ID)
+	_refresh_door_dialogue_id()
+	if Toast != null:
+		Toast.show_info("灵闻 · 你嗅到门口那姑娘的口袋——有股温热的、隐隐发光的味道")
+	if AudioManager != null:
+		AudioManager.play_sfx("item_use")
