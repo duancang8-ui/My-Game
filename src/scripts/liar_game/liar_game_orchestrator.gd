@@ -180,8 +180,23 @@ func _on_vote_submitted(target_id: String, result: int) -> void:
         LiarGameController.Result.WIN:
             _play_win_cinematic_then_result()
         LiarGameController.Result.LOSE:
+            # P9：桃木防御符自动抵一次「制裁」
+            if _try_consume_defense_charm():
+                return
             _lock_player()
             _play_lose_cinematic_then_result(target_id)
+
+# P9 · 桃木防御符：消耗 1 个 → 不进入 LOSE 演出，直接 retry 关卡
+func _try_consume_defense_charm() -> bool:
+    if GameState == null or not GameState.has_method("has_item"):
+        return false
+    if not GameState.has_item("item_defense_charm"):
+        return false
+    GameState.remove_item("item_defense_charm", 1)
+    if Toast != null:
+        Toast.show_success("桃木符替你挡了一次「制裁」 ✓  关卡重置")
+    call_deferred("_on_retry")
+    return true
 
 func _play_win_cinematic_then_result() -> void:
     if Toast != null:
@@ -289,14 +304,111 @@ func _on_rotate_ended(result: int) -> void:
             )
 
 func _unhandled_input(event: InputEvent) -> void:
-    # Phase 2 期间，玩家按 E 转桌（不再触发 Interactable，因为已被 queue_free）
-    if _phase != 2 or _rotate_ctrl == null:
+    # Phase 2：按 E 转桌
+    if _phase == 2:
+        if _rotate_ctrl == null:
+            return
+        if _rotate_ctrl.state != RotateGameController.State.PLAYING:
+            return
+        if event.is_action_pressed("interact"):
+            _rotate_ctrl.add_rotation()
+            get_viewport().set_input_as_handled()
         return
-    if _rotate_ctrl.state != RotateGameController.State.PLAYING:
+    # Phase 1：P9 道具快捷键（C = 线索袋，X = 灵闻笔记）
+    if _phase != 1:
         return
-    if event.is_action_pressed("interact"):
-        _rotate_ctrl.add_rotation()
+    if _ctrl == null or _ctrl.state != LiarGameController.State.PLAYING:
+        return
+    if not (event is InputEventKey):
+        return
+    var k := event as InputEventKey
+    if not k.pressed or k.echo:
+        return
+    if k.keycode == KEY_C:
+        _try_use_clue_bag()
         get_viewport().set_input_as_handled()
+    elif k.keycode == KEY_X:
+        _try_use_smell_note()
+        get_viewport().set_input_as_handled()
+
+# P9 · 线索袋：消耗 1 → 随机揭示 1 个未观察线索
+const _CLUE_LABELS: Dictionary = {
+    "observe_wall_grid": "墙上的方格",
+    "observe_clock":     "桌上的座钟",
+    "observe_corpse":    "桌上的尸体",
+}
+
+func _try_use_clue_bag() -> void:
+    if GameState == null or not GameState.has_method("has_item"):
+        return
+    if not GameState.has_item("item_clue_bag"):
+        if Toast != null:
+            Toast.show_error("你没有「线索袋」")
+        return
+    # 找一个尚未观察的线索
+    var candidates: Array = []
+    for cid in _CLUE_LABELS.keys():
+        if not GameState.has_observed(cid):
+            candidates.append(cid)
+    if candidates.is_empty():
+        if Toast != null:
+            Toast.show_info("你已经观察过这屋子的所有线索了")
+        return
+    var rng: RandomNumberGenerator = _ctrl.get_rng() if _ctrl != null and _ctrl.has_method("get_rng") else RandomNumberGenerator.new()
+    var picked: String = candidates[rng.randi() % candidates.size()]
+    GameState.remove_item("item_clue_bag", 1)
+    GameState.mark_observed(picked)
+    if Toast != null:
+        Toast.show_success("线索袋打开了 ✓  你「看到」了：%s" % _CLUE_LABELS[picked])
+    # 触发灵光闪现检查（与 DialogueController._on_dialogue_ended 同款逻辑）
+    if GameState.observed_clue_count() >= 3 and not GameState.completed_dialogues.has("liar_insight"):
+        var dc = get_node_or_null("../DialogueController")
+        if dc != null and dc.has_method("_start_dialogue"):
+            dc.call_deferred("_start_dialogue", "liar_insight")
+
+# P9 · 灵闻笔记：消耗 1 → 随机闻 1 个未灵闻的 NPC
+# 清香摘要是本项目自创笔触：保留人物姓名作为事实参考，所有描述均原创
+const _SMELL_TABLE: Dictionary = {
+    "liar_sheep_master":  "浓郁的腐臭，混着别的什么……像「不属于人」的味道。这是答案的方向。",
+    "liar_tiantian":      "脂粉味偏重，底下有一点点酸涩。普通人。",
+    "liar_qiao_jiajin":   "陈年烟味、汗，还有一丝若有若无的血腥。普通人。",
+    "liar_han_yimo":      "墨水。还有一点冷意。普通人。",
+    "liar_zhang_chenze":  "干净到刻意的消毒水味。普通人。",
+    "liar_li_shangwu":    "火药燃过的余烬。普通人。",
+    "liar_lin_qin":       "极淡的薄荷。普通人。",
+    "liar_zhao_haibo":    "医院的味道，又凉又干。普通人。",
+    "liar_xiao_ran":      "几乎闻不到什么味道。普通人。",
+}
+
+func _try_use_smell_note() -> void:
+    if GameState == null or not GameState.has_method("has_item"):
+        return
+    if not GameState.has_item("item_smell_note"):
+        if Toast != null:
+            Toast.show_error("你没有「灵闻笔记」")
+        return
+    var candidates: Array = []
+    for nid in _SMELL_TABLE.keys():
+        if not GameState.has_sniffed(nid):
+            candidates.append(nid)
+    if candidates.is_empty():
+        if Toast != null:
+            Toast.show_info("你已经闻遍了屋里每一个人")
+        return
+    var rng: RandomNumberGenerator = _ctrl.get_rng() if _ctrl != null and _ctrl.has_method("get_rng") else RandomNumberGenerator.new()
+    var picked: String = candidates[rng.randi() % candidates.size()]
+    GameState.remove_item("item_smell_note", 1)
+    GameState.mark_sniffed(picked)
+    var npc_name: String = ""
+    if picked == "liar_sheep_master":
+        npc_name = "人羊"
+    else:
+        # 把 dialogue_id 还原成 npc_id 然后查 name
+        var npc_id: String = picked.substr(5)   # 去掉 "liar_" 前缀
+        npc_name = LiarNpcId.name_of(npc_id)
+    var desc: String = _SMELL_TABLE[picked]
+    if Toast != null:
+        Toast.show_info("灵闻 · %s —— %s" % [npc_name, desc])
 
 func _play_lose_cinematic_then_result(target_id: String) -> void:
     var reason: String = _ctrl.lose_reason if _ctrl != null else "wrong_vote"

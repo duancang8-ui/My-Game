@@ -16,6 +16,7 @@ var observed_clues: PackedStringArray = PackedStringArray()   ## P4 final · 4.9
 var scene_positions: Dictionary = {}   ## P5.5: scene_file_path → Vector2，玩家上次离开该场景时的位置
 var inventory: Dictionary = {}         ## P7: item_id → 数量
 var pending_day_advance: bool = false  ## P7: 玩家正要进面试房，回来后 +1 day（防多次触发）
+var sniffed_npcs: PackedStringArray = PackedStringArray()   ## P9: 灵闻笔记已使用过的 NPC dialogue_id
 
 func reset() -> void:
     current_cycle = 1
@@ -30,6 +31,7 @@ func reset() -> void:
     scene_positions = {}
     inventory = {}
     pending_day_advance = false
+    sniffed_npcs = PackedStringArray()
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
@@ -104,6 +106,16 @@ func try_purchase(item_id: String, price: int) -> bool:
     add_item(item_id, 1)
     return true
 
+# P9：灵闻笔记 — 记录已"闻过"的 NPC
+func mark_sniffed(dialogue_id: String) -> bool:
+    if dialogue_id == "" or sniffed_npcs.has(dialogue_id):
+        return false
+    sniffed_npcs.append(dialogue_id)
+    return true
+
+func has_sniffed(dialogue_id: String) -> bool:
+    return sniffed_npcs.has(dialogue_id)
+
 # P7：日夜推进
 func mark_pending_day_advance() -> void:
     pending_day_advance = true
@@ -143,6 +155,7 @@ func to_dict() -> Dictionary:
         "scene_positions": sp_serialized,
         "inventory": inventory.duplicate(),
         "pending_day_advance": pending_day_advance,
+        "sniffed_npcs": Array(sniffed_npcs),
     }
 
 func from_dict(data: Dictionary) -> void:
@@ -167,3 +180,4 @@ func from_dict(data: Dictionary) -> void:
     var inv_data = data.get("inventory", {})
     inventory = {} if not (inv_data is Dictionary) else (inv_data as Dictionary).duplicate()
     pending_day_advance = bool(data.get("pending_day_advance", false))
+    sniffed_npcs = PackedStringArray(data.get("sniffed_npcs", []))

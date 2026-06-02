@@ -11,6 +11,7 @@ var _panel: PanelContainer
 var _cycle_day_label: Label
 var _dao_label: Label
 var _quest_label: Label
+var _rest_hint_label: Label   ## P9: 按 R 用休息券提示
 
 func _ready() -> void:
 	layer = 5
@@ -74,15 +75,56 @@ func _build() -> void:
 	_quest_label.custom_minimum_size = Vector2(224, 0)
 	vbox.add_child(_quest_label)
 
+	# P9：休息券提示（按条件显示）
+	_rest_hint_label = Label.new()
+	_rest_hint_label.add_theme_font_size_override("font_size", 11)
+	_rest_hint_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.45))
+	_rest_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_rest_hint_label.custom_minimum_size = Vector2(224, 0)
+	_rest_hint_label.text = "📜 按 R 用休息券抵消今日"
+	_rest_hint_label.visible = false
+	vbox.add_child(_rest_hint_label)
+
 func _refresh_state() -> void:
 	var gs = get_node_or_null("/root/GameState")
 	if gs == null:
 		return
 	_cycle_day_label.text = "Cycle %d · Day %d" % [gs.current_cycle, gs.current_day]
 	_dao_label.text = "🪙 %d 道" % gs.dao_count
+	# P9：休息券提示只在「有 pending day +1」+「有库存」时显示
+	if _rest_hint_label != null:
+		var pending: bool = bool(gs.pending_day_advance) if gs.has_method("has_item") else false
+		var has_ticket: bool = gs.has_method("has_item") and gs.has_item("item_rest_ticket")
+		_rest_hint_label.visible = pending and has_ticket
+		if _rest_hint_label.visible:
+			_rest_hint_label.text = "📜 按 R 用休息券抵消今日（剩 %d 张）" % gs.get_item_count("item_rest_ticket")
 
 func _on_quest_changed(quest_id: String, title: String, hint: String) -> void:
 	if quest_id == "":
 		_quest_label.text = "（无任务）"
 		return
 	_quest_label.text = "📌 %s\n%s" % [title, hint]
+
+# P9：休息券消耗（按 R）
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey):
+		return
+	var k := event as InputEventKey
+	if not k.pressed or k.echo:
+		return
+	if k.keycode != KEY_R:
+		return
+	var gs = get_node_or_null("/root/GameState")
+	if gs == null:
+		return
+	if not bool(gs.pending_day_advance):
+		return   # 没有要推进的日子，不消耗
+	if not gs.has_method("has_item") or not gs.has_item("item_rest_ticket"):
+		if Toast != null:
+			Toast.show_error("没有休息券可用")
+		return
+	gs.remove_item("item_rest_ticket", 1)
+	gs.pending_day_advance = false
+	if Toast != null:
+		Toast.show_success("撕掉一张休息券 ✓ 今日不算")
+	get_viewport().set_input_as_handled()
