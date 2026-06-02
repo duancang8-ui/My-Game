@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://1jll1f7c8fj3"]
+[gd_scene load_steps=10 format=3 uid="uid://bratwarehouse1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://src/scripts/rat_game/rat_game_orchestrator.gd" id="7_orch"]
 [ext_resource type="Script" path="res://src/scripts/ui/rat_game_hud.gd" id="8_hud"]
 [ext_resource type="Script" uid="uid://hw16wwn6m6js" path="res://src/scripts/cutscene/cutscene_controller.gd" id="9_cutscene"]
+[ext_resource type="Script" path="res://src/scripts/liar_game/liar_cinematic.gd" id="10_cinematic"]
 
 [node name="RatWarehouse" type="Node2D"]
 
@@ -56,6 +57,15 @@ time_limit = 300.0
 [node name="RatGameHud" type="CanvasLayer" parent="."]
 script = ExtResource("8_hud")
 
+[node name="ZhuqueCinematic" type="CanvasLayer" parent="."]
+script = ExtResource("10_cinematic")
+overlay_color = Color(0.55, 0.05, 0.05, 0.85)
+title_color = Color(1, 0.45, 0.35, 1)
+subtitle_color = Color(0.95, 0.85, 0.75, 1)
+fade_in_duration = 0.5
+hold_duration = 1.5
+fade_out_duration = 0.4
+
 [node name="RatGameOrchestrator" type="Node" parent="."]
 script = ExtResource("7_orch")
 controller_path = NodePath("../RatGameController")
@@ -64,4 +74,5 @@ intro_cutscene_path = NodePath("../IntroCutscene")
 ending_cutscene_path = NodePath("../EndingCutscene")
 dialogue_controller_path = NodePath("../DialogueController")
 npc_door_path = NodePath("../YSortContainer/RatNpc/Interactable")
+zhuque_cinematic_path = NodePath("../ZhuqueCinematic")
 return_scene = "res://src/scenes/world/yucheng_main.tscn"

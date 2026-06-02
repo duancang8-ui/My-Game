@@ -460,26 +460,34 @@ func _register_rat_pitch() -> void:
 	c3.label = "找不到呢？"
 	c3.next_line_id = "rat_pitch_03"
 	var c4: DialogueChoice = DialogueChoice.new()
-	c4.label = "（开始）付 1 道入场"
+	c4.label = "（普通）付 1 道入场"
 	c4.action_id = "enter_rat_warehouse"
 	c4.ends_dialogue = true
+	var c4b: DialogueChoice = DialogueChoice.new()
+	c4b.label = "[ 赌命入场 ] 1 道 + 我的命  （赢 +5 道）"
+	c4b.action_id = "enter_rat_warehouse_bet"
+	c4b.ends_dialogue = true
 	var c5: DialogueChoice = DialogueChoice.new()
 	c5.label = "（再想想，走开）"
 	c5.ends_dialogue = true
-	l2.choices = [c3, c4, c5] as Array[DialogueChoice]
+	l2.choices = [c3, c4, c4b, c5] as Array[DialogueChoice]
 
 	var l3: DialogueLine = DialogueLine.new()
 	l3.line_id = "rat_pitch_03"
 	l3.speaker_name = "人鼠"
 	l3.text = "（她「噗嗤」笑出来）\n找不到？\n[color=#aaaaaa]那门票就作废啦——损失 1 个「道」而已。[/color]\n我又不要你的命。"
 	var c6: DialogueChoice = DialogueChoice.new()
-	c6.label = "（开始）付 1 道入场"
+	c6.label = "（普通）付 1 道入场"
 	c6.action_id = "enter_rat_warehouse"
 	c6.ends_dialogue = true
+	var c6b: DialogueChoice = DialogueChoice.new()
+	c6b.label = "[ 赌命入场 ] 1 道 + 我的命"
+	c6b.action_id = "enter_rat_warehouse_bet"
+	c6b.ends_dialogue = true
 	var c7: DialogueChoice = DialogueChoice.new()
 	c7.label = "（算了，走开）"
 	c7.ends_dialogue = true
-	l3.choices = [c6, c7] as Array[DialogueChoice]
+	l3.choices = [c6, c6b, c7] as Array[DialogueChoice]
 
 	register("rat_npc_yucheng", [l1, l2, l3], l1.line_id)
 
@@ -575,6 +583,26 @@ func _register_rat_endings() -> void:
 	w.speaker_name = "人鼠"
 	w.text = "（她的呼吸顿住了）\n[color=#b71c1c]——你怎么知道的？[/color]\n[color=#aaaaaa]（她退了一步，整个人在面具下颤抖）[/color]\n好……你赢了。这「道」归你了。"
 	register("rat_win", [w], w.line_id)
+
+	# P8.5：赌命失败 → 朱雀处决演出
+	var z: Array[DialogueLine] = []
+	z.append(_speaker_line("rat_bet_z_01", "人鼠",
+		"（她的笑还挂在面具上）\n[color=#aaaaaa]时间到。可惜啦，靓仔。[/color]\n你押了命的——就别走啦。"))
+	z.append(_narration("rat_bet_z_02",
+		"[color=#b71c1c]——空气一下子安静了。[/color]\n仓库外，远远传来一种说不出的低鸣，像鸟的喉音，又不像。"))
+	z.append(_narration("rat_bet_z_03",
+		"[color=#aaaaaa]（屋顶忽然多出一个人影。）[/color]\n一个赤足、披着血红羽毛的瘦长男人，从半空落到你们之间，脚踝几乎没碰地。"))
+	z.append(_speaker_line("rat_bet_z_04", "朱雀",
+		"[color=#b71c1c]哦——「赌命」啊。[/color]\n（他低头看了一眼人鼠，手指轻轻抚过她面具的边沿）\n规则是绝对的。"))
+	z.append(_narration("rat_bet_z_05",
+		"[color=#aaaaaa]人鼠想说什么。[/color]\n但朱雀的手已经穿过了她的胸口——\n[color=#b71c1c]温热的血液铺了你一身。[/color]"))
+	z.append(_speaker_line("rat_bet_z_06", "朱雀",
+		"（他转过头，目光落在你身上，仿佛在看一只新奇的小动物）\n[color=#aaaaaa]至于你——[/color]\n[color=#b71c1c]愿赌服输，对吧？[/color]"))
+	z.append(_narration("rat_bet_z_07",
+		"[color=#b71c1c]——你眼前一黑。[/color]"))
+	for i in range(z.size() - 1):
+		z[i].auto_next_line_id = z[i + 1].line_id
+	register("rat_bet_lose_zhuque", z, z[0].line_id)
 
 	# 超时失败
 	var l1: DialogueLine = DialogueLine.new()

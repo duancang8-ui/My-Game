@@ -17,6 +17,7 @@ var scene_positions: Dictionary = {}   ## P5.5: scene_file_path → Vector2，�
 var inventory: Dictionary = {}         ## P7: item_id → 数量
 var pending_day_advance: bool = false  ## P7: 玩家正要进面试房，回来后 +1 day（防多次触发）
 var sniffed_npcs: PackedStringArray = PackedStringArray()   ## P9: 灵闻笔记已使用过的 NPC dialogue_id
+var rat_bet_mode: bool = false   ## P8.5：本次人鼠关是否为「赌命」模式（赢得多/输了触发朱雀处决）
 
 func reset() -> void:
     current_cycle = 1
@@ -32,6 +33,7 @@ func reset() -> void:
     inventory = {}
     pending_day_advance = false
     sniffed_npcs = PackedStringArray()
+    rat_bet_mode = false
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
