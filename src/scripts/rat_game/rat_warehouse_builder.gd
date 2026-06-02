@@ -205,6 +205,8 @@ func _on_light_switch_pressed(_inter: Interactable) -> void:
 		_light_overlay.color = Color(0, 0, 0, 0.0) if _light_on else Color(0, 0, 0, 0.7)
 	if Toast != null:
 		Toast.show_info("灯%s了" % ["开" if _light_on else "关"])
+	if AudioManager != null:
+		AudioManager.play_sfx("light_switch")
 
 func _spawn_light_overlay() -> void:
 	# 全屏黑色遮罩（仅在灯关闭时显示，呼应原作"道应该发光"的陷阱）

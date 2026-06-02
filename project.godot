@@ -25,6 +25,7 @@ DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
 Toast="*res://src/scripts/ui/toast.gd"
 Notebook="*res://src/scripts/ui/notebook.gd"
 QuestState="*res://src/scripts/quest/quest_state.gd"
+AudioManager="*res://src/scripts/audio/audio_manager.gd"
 
 [display]
 

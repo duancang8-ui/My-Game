@@ -104,6 +104,9 @@ func _on_game_ended(result: int) -> void:
             # P4 final · c3：胜利奖励 3 道
             if GameState != null and GameState.has_method("add_dao"):
                 GameState.add_dao(3)
+            if AudioManager != null:
+                AudioManager.play_sfx("shield_form")
+                AudioManager.play_sfx("dao_earn")
             if _result_screen != null:
                 _result_screen.show_win(
                     "盾牌长出来了！",

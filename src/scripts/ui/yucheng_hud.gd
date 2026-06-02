@@ -127,4 +127,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	gs.pending_day_advance = false
 	if Toast != null:
 		Toast.show_success("撕掉一张休息券 ✓ 今日不算")
+	if AudioManager != null:
+		AudioManager.play_sfx("rest_ticket_tear")
 	get_viewport().set_input_as_handled()

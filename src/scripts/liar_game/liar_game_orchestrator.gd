@@ -195,6 +195,8 @@ func _try_consume_defense_charm() -> bool:
     GameState.remove_item("item_defense_charm", 1)
     if Toast != null:
         Toast.show_success("桃木符替你挡了一次「制裁」 ✓  关卡重置")
+    if AudioManager != null:
+        AudioManager.play_sfx("item_use")
     call_deferred("_on_retry")
     return true
 
@@ -218,6 +220,9 @@ func _on_win_cinematic_done() -> void:
         GameState.add_dao(5)
         if Toast != null:
             Toast.show_success("说谎者关卡过关  +5 道")
+    if AudioManager != null:
+        AudioManager.play_sfx("win_chime")
+        AudioManager.play_sfx("dao_earn")
     # P4 final · 4.8：不再直接出门，而是同房间触发雨后春笋衔接
     _start_phase2()
 
@@ -287,6 +292,9 @@ func _on_rotate_ended(result: int) -> void:
             GameState.add_dao(3)
         if Toast != null:
             Toast.show_success("春笋盾牌长出来了  +3 道")
+        if AudioManager != null:
+            AudioManager.play_sfx("shield_form")
+            AudioManager.play_sfx("dao_earn")
         if _result_screen != null:
             _result_screen.show_win(
                 "活到了下一关",
@@ -360,6 +368,8 @@ func _try_use_clue_bag() -> void:
     GameState.mark_observed(picked)
     if Toast != null:
         Toast.show_success("线索袋打开了 ✓  你「看到」了：%s" % _CLUE_LABELS[picked])
+    if AudioManager != null:
+        AudioManager.play_sfx("item_use")
     # 触发灵光闪现检查（与 DialogueController._on_dialogue_ended 同款逻辑）
     if GameState.observed_clue_count() >= 3 and not GameState.completed_dialogues.has("liar_insight"):
         var dc = get_node_or_null("../DialogueController")
@@ -399,6 +409,8 @@ func _try_use_smell_note() -> void:
     var picked: String = candidates[rng.randi() % candidates.size()]
     GameState.remove_item("item_smell_note", 1)
     GameState.mark_sniffed(picked)
+    if AudioManager != null:
+        AudioManager.play_sfx("item_use")
     var npc_name: String = ""
     if picked == "liar_sheep_master":
         npc_name = "人羊"
@@ -432,6 +444,8 @@ func _play_lose_cinematic_then_result(target_id: String) -> void:
         _on_lose_cinematic_done(target_id, reason)
 
 func _on_lose_cinematic_done(target_id: String, reason: String) -> void:
+    if AudioManager != null:
+        AudioManager.play_sfx("lose_thud")
     if _result_screen != null:
         if reason == "time_up":
             _result_screen.show_lose(

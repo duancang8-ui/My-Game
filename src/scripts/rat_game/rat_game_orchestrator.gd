@@ -103,10 +103,15 @@ func _on_game_ended(result: int) -> void:
 				GameState.add_dao(2)   ## 净奖励：+2 道（之前扣了 1，赚 1）
 			if Toast != null:
 				Toast.show_success("识破了人鼠！+2 道")
+			if AudioManager != null:
+				AudioManager.play_sfx("rat_pocket_reveal")
+				AudioManager.play_sfx("dao_earn")
 			dlg_id = "rat_win"
 		RatGameController.Result.LOSE:
 			if Toast != null:
 				Toast.show_error("时间到 ⌛ 门票作废")
+			if AudioManager != null:
+				AudioManager.play_sfx("lose_thud")
 			dlg_id = "rat_lose_timeout"
 	# 用 ending cutscene 播放收尾对话；完毕后切回玉城
 	if dlg_id != "" and _ending != null and _ending.has_method("play"):

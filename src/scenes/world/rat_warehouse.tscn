@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bratwarehouse1"]
+[gd_scene format=3 uid="uid://1jll1f7c8fj3"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]

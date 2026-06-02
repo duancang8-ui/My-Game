@@ -132,10 +132,16 @@ func _make_item_row(item_id: String) -> Control:
 func _on_buy_pressed(item_id: String) -> void:
 	var price: int = ItemRegistry.price_of(item_id)
 	var ok: bool = GameState.try_purchase(item_id, price)
-	if ok and Toast != null:
-		Toast.show_success("买入：%s（-%d 道）" % [ItemRegistry.name_of(item_id), price])
-	elif Toast != null:
-		Toast.show_error("道不够……")
+	if ok:
+		if Toast != null:
+			Toast.show_success("买入：%s（-%d 道）" % [ItemRegistry.name_of(item_id), price])
+		if AudioManager != null:
+			AudioManager.play_sfx("shop_purchase")
+	else:
+		if Toast != null:
+			Toast.show_error("道不够……")
+		if AudioManager != null:
+			AudioManager.play_sfx("ui_click")
 	_refresh()
 
 func _on_close_pressed() -> void:
