@@ -53,6 +53,9 @@ func change_to(scene_path: String, fade_duration: float = DEFAULT_FADE) -> void:
     t1.tween_property(_overlay, "color:a", 1.0, fade_duration)
     await t1.finished
 
+    # P5.5：fade 完成、scene 还没切之前 → 快照当前玩家位置
+    _snapshot_player_position()
+
     state = State.LOADING
     var err: int = get_tree().change_scene_to_file(scene_path)
     if err != OK:
@@ -81,6 +84,24 @@ func change_to(scene_path: String, fade_duration: float = DEFAULT_FADE) -> void:
 
 func is_busy() -> bool:
     return state != State.IDLE
+
+# P5.5：在 change_scene_to_file 之前，把当前玩家位置存到 GameState.scene_positions
+# Player.gd._ready() 在新场景加载完后会读回 → 跨场往返不丢位置
+func _snapshot_player_position() -> void:
+    var gs := get_node_or_null("/root/GameState")
+    if gs == null or not gs.has_method("set_scene_position"):
+        return
+    var scene_root := get_tree().current_scene
+    if scene_root == null:
+        return
+    var current_path: String = scene_root.scene_file_path
+    if current_path == "":
+        return
+    var player := get_tree().get_first_node_in_group("player")
+    if player == null:
+        return
+    if player is Node2D:
+        gs.set_scene_position(current_path, (player as Node2D).position)
 
 func _on_node_added(node: Node) -> void:
     if node is Interactable:

@@ -16,6 +16,25 @@ extends CharacterBody2D
 
 var _input: PlayerInput = PlayerInput.new()
 
+func _ready() -> void:
+    # P5.5：加入 player group 方便 SceneManager 在切场前找到玩家
+    add_to_group("player")
+    _restore_position_from_save()
+
+func _restore_position_from_save() -> void:
+    # 如果 GameState 里有当前场景的历史位置，覆盖 .tscn 默认位置
+    # 这样玩家来回穿越场景时能回到上次离开的位置
+    var gs := get_node_or_null("/root/GameState")
+    if gs == null or not gs.has_method("has_scene_position"):
+        return
+    var scene_root := get_tree().current_scene
+    if scene_root == null:
+        return
+    var scene_path: String = scene_root.scene_file_path
+    if scene_path == "" or not gs.has_scene_position(scene_path):
+        return
+    position = gs.get_scene_position(scene_path)
+
 func calculate_velocity() -> Vector2:
     return _input.get_move_direction() * speed
 
