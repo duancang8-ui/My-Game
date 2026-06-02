@@ -76,10 +76,24 @@ func _on_continue_pressed() -> void:
 
 func _on_dialogue_ended() -> void:
     # 把已完成的对话记录到 GameState（用于存档 + Cycle 切换时检索记忆）
-    if _active_dialogue_id != "":
+    # P4.6 · a2：同时 +1 npc_visit_count（用于多轮对话切换 v1/v2/v3）
+    # P4 final · 4.9：observe_* 对话结束时 mark_observed；满 3 个触发 liar_insight
+    var ended_id: String = _active_dialogue_id
+    if ended_id != "":
         var gs = get_node_or_null("/root/GameState")
         if gs != null:
-            gs.mark_dialogue_completed(_active_dialogue_id)
+            gs.mark_dialogue_completed(ended_id)
+            if gs.has_method("increment_visit_count"):
+                gs.increment_visit_count(ended_id)
+            if ended_id.begins_with("observe_") and gs.has_method("mark_observed"):
+                var newly: bool = gs.mark_observed(ended_id)
+                # 第 3 个观察点完成后触发"灵光闪现"
+                if newly and gs.observed_clue_count() >= 3 and not gs.completed_dialogues.has("liar_insight"):
+                    call_deferred("_start_dialogue", "liar_insight")
+        # P4 final · a4：把对话事实写入笔记本
+        var nb = get_node_or_null("/root/Notebook")
+        if nb != null and nb.has_method("record"):
+            nb.record(ended_id)
         _active_dialogue_id = ""
     _runner = null
     _set_player_input_enabled(true)   ## 对话结束恢复玩家控制

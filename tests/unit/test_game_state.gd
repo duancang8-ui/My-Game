@@ -47,7 +47,7 @@ func test_to_dict_and_from_dict_roundtrip() -> void:
     GameState.mark_npc_met("乔家劲")
     GameState.mark_dialogue_completed("test_d_01")
     GameState.add_dao(42)
-    GameState.current_scene_path = "res://src/scenes/world/daocheng_main.tscn"
+    GameState.current_scene_path = "res://src/scenes/world/yucheng_main.tscn"
     var dict: Dictionary = GameState.to_dict()
     GameState.reset()
     assert_eq(GameState.current_cycle, 1)
@@ -59,4 +59,4 @@ func test_to_dict_and_from_dict_roundtrip() -> void:
     assert_true(GameState.met_npcs.has("乔家劲"))
     assert_true(GameState.completed_dialogues.has("test_d_01"))
     assert_eq(GameState.dao_count, 42)
-    assert_eq(GameState.current_scene_path, "res://src/scenes/world/daocheng_main.tscn")
+    assert_eq(GameState.current_scene_path, "res://src/scenes/world/yucheng_main.tscn")

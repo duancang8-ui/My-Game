@@ -14,12 +14,21 @@ var _time_label: Label
 var _progress_bar: ProgressBar
 var _progress_label: Label
 var _hint_label: Label
+var _dao_label: Label   ## P4 final · c3 道币显示
 
 func _ready() -> void:
     layer = 6
     process_mode = Node.PROCESS_MODE_ALWAYS
     _build()
     visible = false
+    set_process(true)
+
+func _process(_delta: float) -> void:
+    if _dao_label == null:
+        return
+    var gs = get_node_or_null("/root/GameState")
+    if gs != null:
+        _dao_label.text = "🪙 %d 道" % gs.dao_count
 
 func _build() -> void:
     _panel = PanelContainer.new()
@@ -78,6 +87,21 @@ func _build() -> void:
     _hint_label.add_theme_color_override("font_color", Color(0.75, 0.7, 0.65))
     _hint_label.text = "[E] 旋转桌面"
     vbox.add_child(_hint_label)
+
+    # P4 final · c3 道币显示（右下角）
+    _dao_label = Label.new()
+    _dao_label.anchor_left = 1.0
+    _dao_label.anchor_right = 1.0
+    _dao_label.anchor_top = 1.0
+    _dao_label.anchor_bottom = 1.0
+    _dao_label.offset_left = -150
+    _dao_label.offset_right = -20
+    _dao_label.offset_top = -50
+    _dao_label.offset_bottom = -16
+    _dao_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    _dao_label.add_theme_font_size_override("font_size", 18)
+    _dao_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.45))
+    add_child(_dao_label)
 
 func update_time(time_left: float) -> void:
     _time_label.text = "剩余 %.1f 秒" % time_left

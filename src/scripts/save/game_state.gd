@@ -11,6 +11,8 @@ var met_npcs: PackedStringArray = PackedStringArray()
 var completed_dialogues: PackedStringArray = PackedStringArray()
 var dao_count: int = 0
 var current_scene_path: String = ""    ## 当前所在场景（用于存档恢复时跳回正确场景）
+var npc_visit_count: Dictionary = {}   ## P4.6 · a2: dialogue_id → 已访问次数
+var observed_clues: PackedStringArray = PackedStringArray()   ## P4 final · 4.9: 已观察的环境线索
 
 func reset() -> void:
     current_cycle = 1
@@ -20,6 +22,8 @@ func reset() -> void:
     completed_dialogues = PackedStringArray()
     dao_count = 0
     current_scene_path = ""
+    npc_visit_count = {}
+    observed_clues = PackedStringArray()
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
@@ -28,6 +32,27 @@ func mark_npc_met(npc_id: String) -> void:
 func mark_dialogue_completed(dialogue_id: String) -> void:
     if not completed_dialogues.has(dialogue_id):
         completed_dialogues.append(dialogue_id)
+
+func increment_visit_count(dialogue_id: String) -> int:
+    var cur: int = int(npc_visit_count.get(dialogue_id, 0))
+    npc_visit_count[dialogue_id] = cur + 1
+    return cur + 1
+
+func get_visit_count(dialogue_id: String) -> int:
+    return int(npc_visit_count.get(dialogue_id, 0))
+
+# P4 final · 4.9：环境线索观察
+func mark_observed(clue_id: String) -> bool:
+    if observed_clues.has(clue_id):
+        return false
+    observed_clues.append(clue_id)
+    return true
+
+func has_observed(clue_id: String) -> bool:
+    return observed_clues.has(clue_id)
+
+func observed_clue_count() -> int:
+    return observed_clues.size()
 
 func add_dao(amount: int) -> void:
     dao_count += amount
@@ -45,6 +70,8 @@ func to_dict() -> Dictionary:
         "completed_dialogues": Array(completed_dialogues),
         "dao_count": dao_count,
         "current_scene_path": current_scene_path,
+        "npc_visit_count": npc_visit_count.duplicate(),
+        "observed_clues": Array(observed_clues),
     }
 
 func from_dict(data: Dictionary) -> void:
@@ -56,3 +83,6 @@ func from_dict(data: Dictionary) -> void:
     completed_dialogues = PackedStringArray(data.get("completed_dialogues", []))
     dao_count = int(data.get("dao_count", 0))
     current_scene_path = String(data.get("current_scene_path", ""))
+    var visit_data = data.get("npc_visit_count", {})
+    npc_visit_count = {} if not (visit_data is Dictionary) else (visit_data as Dictionary).duplicate()
+    observed_clues = PackedStringArray(data.get("observed_clues", []))

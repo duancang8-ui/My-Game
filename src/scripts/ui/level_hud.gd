@@ -14,6 +14,12 @@ var _progress_label: Label
 var _hint_label: Label
 var _sheep_hint_label: RichTextLabel
 var _sheep_hint_text: String = ""
+# P4.6 · a3 倒计时显示
+var _timer_label: Label
+var _timer_visible: bool = false
+var _timer_blink_phase: float = 0.0
+# P4 final · c3 道币显示
+var _dao_label: Label
 
 func _ready() -> void:
     layer = 5
@@ -26,8 +32,9 @@ func _ready() -> void:
         # GameState 没有 changed signal，用 polling 简单处理
         set_process(true)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
     _refresh()
+    _tick_timer_blink(delta)
 
 func _build() -> void:
     _panel = PanelContainer.new()
@@ -79,6 +86,68 @@ func _build() -> void:
     _sheep_hint_label.visible = false
     vbox.add_child(_sheep_hint_label)
 
+    # P4 final · c3 道币显示（右下角）
+    _dao_label = Label.new()
+    _dao_label.anchor_left = 1.0
+    _dao_label.anchor_right = 1.0
+    _dao_label.anchor_top = 1.0
+    _dao_label.anchor_bottom = 1.0
+    _dao_label.offset_left = -150
+    _dao_label.offset_right = -20
+    _dao_label.offset_top = -50
+    _dao_label.offset_bottom = -16
+    _dao_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    _dao_label.add_theme_font_size_override("font_size", 18)
+    _dao_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.45))
+    add_child(_dao_label)
+
+    # P4.6 · a3 倒计时（独立 Label，右上角）
+    _timer_label = Label.new()
+    _timer_label.anchor_left = 1.0
+    _timer_label.anchor_right = 1.0
+    _timer_label.anchor_top = 0.0
+    _timer_label.anchor_bottom = 0.0
+    _timer_label.offset_left = -180
+    _timer_label.offset_right = -20
+    _timer_label.offset_top = 24
+    _timer_label.offset_bottom = 60
+    _timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    _timer_label.add_theme_font_size_override("font_size", 22)
+    _timer_label.add_theme_color_override("font_color", Color(0.95, 0.65, 0.35))
+    _timer_label.visible = false
+    add_child(_timer_label)
+
+func update_timer(time_left: float) -> void:
+    if _timer_label == null:
+        return
+    _timer_visible = true
+    _timer_label.visible = true
+    var total: int = int(ceil(time_left))
+    var mm: int = total / 60
+    var ss: int = total % 60
+    _timer_label.text = "⏳ %02d:%02d" % [mm, ss]
+    if time_left <= 60.0:
+        _timer_label.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35))
+    else:
+        _timer_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.45))
+
+func hide_timer() -> void:
+    _timer_visible = false
+    if _timer_label != null:
+        _timer_label.visible = false
+
+func _tick_timer_blink(delta: float) -> void:
+    if not _timer_visible or _timer_label == null:
+        return
+    # 当剩余 < 60s 时（颜色已变红），叠加 modulate 闪烁
+    var text: String = _timer_label.text
+    if text.begins_with("⏳ 00:"):
+        _timer_blink_phase += delta * 4.0
+        var a: float = 0.45 + 0.55 * abs(sin(_timer_blink_phase))
+        _timer_label.modulate = Color(1, 1, 1, a)
+    else:
+        _timer_label.modulate = Color.WHITE
+
 func set_sheep_hint(text: String) -> void:
     _sheep_hint_text = text
     if _sheep_hint_label != null:
@@ -96,7 +165,10 @@ func _refresh() -> void:
             count += 1
     var total: int = npc_dialogue_ids.size()
     if count >= total and total > 0:
-        _progress_label.text = "✓ 已对话 %d/%d　[color=#ffd93d]去桌前提交答案吧[/color]" % [count, total]
+        _progress_label.text = "✓ 已对话 %d/%d　[color=#ffd93d]去桌前写下名字吧[/color]" % [count, total]
         _progress_label.add_theme_color_override("font_color", Color(0.55, 0.95, 0.55))
     else:
-        _progress_label.text = "已对话: %d/%d 名囚徒" % [count, total]
+        _progress_label.text = "已对话: %d/%d 名参与者" % [count, total]
+    # P4 final · c3 道币
+    if _dao_label != null:
+        _dao_label.text = "🪙 %d 道" % gs.dao_count

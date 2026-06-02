@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://binterviewroom1"]
+[gd_scene load_steps=15 format=3 uid="uid://binterviewroom1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
@@ -11,6 +11,10 @@
 [ext_resource type="Script" uid="uid://lwsydnvf4tdr" path="res://src/scripts/ui/result_screen.gd" id="9_result"]
 [ext_resource type="Script" uid="uid://hw16wwn6m6js" path="res://src/scripts/cutscene/cutscene_controller.gd" id="10_cutscene"]
 [ext_resource type="Script" uid="uid://rljnyxj01nwo" path="res://src/scripts/ui/level_hud.gd" id="11_hud"]
+[ext_resource type="Script" path="res://src/scripts/liar_game/liar_npc_dialogue_selector.gd" id="12_selector"]
+[ext_resource type="Script" path="res://src/scripts/liar_game/liar_cinematic.gd" id="13_cinematic"]
+[ext_resource type="Script" path="res://src/scripts/rotate_game/rotate_game_controller.gd" id="14_rotatectrl"]
+[ext_resource type="Script" path="res://src/scripts/ui/rotate_game_hud.gd" id="15_rotatehud"]
 
 [node name="InterviewRoom" type="Node2D"]
 
@@ -60,12 +64,44 @@ dialogue_id = "liar_sheep_rules"
 auto_start = false
 lock_player = true
 
+[node name="RainyInRoomCutscene" type="Node" parent="."]
+script = ExtResource("10_cutscene")
+dialogue_box_path = NodePath("../DialogueBox")
+player_path = NodePath("../YSortContainer/Player")
+dialogue_id = "rainy_in_room_intro"
+auto_start = false
+lock_player = true
+
 [node name="LevelHUD" type="CanvasLayer" parent="."]
 script = ExtResource("11_hud")
-npc_dialogue_ids = Array[String](["liar_chen_junnan", "liar_qiao_jiajin", "liar_zhang_lijuan", "liar_su_shan", "liar_lin_qin", "liar_han_yimo", "liar_zhang_chenze", "liar_zhao_haibo", "liar_xiao_ran"])
+npc_dialogue_ids = Array[String](["liar_tiantian", "liar_qiao_jiajin", "liar_han_yimo", "liar_zhang_chenze", "liar_li_shangwu", "liar_lin_qin", "liar_zhao_haibo", "liar_xiao_ran"])
+
+[node name="LoseCinematic" type="CanvasLayer" parent="."]
+script = ExtResource("13_cinematic")
+overlay_color = Color(0.6, 0.05, 0.05, 0.85)
+title_color = Color(1, 0.55, 0.45, 1)
+subtitle_color = Color(0.95, 0.85, 0.8, 1)
+
+[node name="WinCinematic" type="CanvasLayer" parent="."]
+script = ExtResource("13_cinematic")
+overlay_color = Color(0.2, 0.55, 0.95, 0.55)
+title_color = Color(1, 0.92, 0.55, 1)
+subtitle_color = Color(0.9, 0.92, 1, 1)
+
+[node name="LiarNpcDialogueSelector" type="Node" parent="."]
+script = ExtResource("12_selector")
+npc_id_prefix = "liar_"
 
 [node name="LiarGameController" type="Node" parent="."]
 script = ExtResource("6_ctrl")
+
+[node name="RotateGameController" type="Node" parent="."]
+script = ExtResource("14_rotatectrl")
+target_rotations = 100
+time_limit = 30.0
+
+[node name="RotateGameHud" type="CanvasLayer" parent="."]
+script = ExtResource("15_rotatehud")
 
 [node name="LiarGameOrchestrator" type="Node" parent="."]
 script = ExtResource("7_orch")
@@ -76,3 +112,9 @@ player_path = NodePath("../YSortContainer/Player")
 cutscene_path = NodePath("../OpeningCutscene")
 rules_cutscene_path = NodePath("../SheepRulesCutscene")
 level_hud_path = NodePath("../LevelHUD")
+lose_cinematic_path = NodePath("../LoseCinematic")
+win_cinematic_path = NodePath("../WinCinematic")
+rainy_in_room_cutscene_path = NodePath("../RainyInRoomCutscene")
+rotate_controller_path = NodePath("../RotateGameController")
+rotate_hud_path = NodePath("../RotateGameHud")
+ysort_path = NodePath("../YSortContainer")

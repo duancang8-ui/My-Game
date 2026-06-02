@@ -55,6 +55,7 @@ func _ready() -> void:
     call_deferred("_start_intro")
 
 func _start_intro() -> void:
+    print("[RotateOrch] _start_intro cutscene=%s" % _cutscene)
     if _cutscene == null:
         _begin_round()
         return
@@ -62,13 +63,17 @@ func _start_intro() -> void:
     _cutscene.play("rainy_field_intro")
 
 func _on_intro_done() -> void:
+    print("[RotateOrch] intro done → begin round")
     _begin_round()
 
 func _begin_round() -> void:
+    print("[RotateOrch] _begin_round: unlock + start ctrl + show HUD")
     if _hud != null:
         _hud.visible = true
         _hud.update_time(_ctrl.time_limit)
         _hud.update_progress(0, _ctrl.target_rotations)
+    # 防御性：即使 cutscene 没正确 unlock，也强制 unlock
+    _unlock_player()
     _ctrl.start_game()
     _accepting_input = true
     if Toast != null:
@@ -96,13 +101,16 @@ func _on_game_ended(result: int) -> void:
     _accepting_input = false
     match result:
         RotateGameController.Result.WIN:
+            # P4 final · c3：胜利奖励 3 道
+            if GameState != null and GameState.has_method("add_dao"):
+                GameState.add_dao(3)
             if _result_screen != null:
                 _result_screen.show_win(
                     "盾牌长出来了！",
-                    "你转够了 100 圈——9 个春笋盾牌从桌子四周升起，正好挡住头顶飞来的鱼叉。\n人狗摇了摇尾巴：'汪——很好啊小齐夏，你过关了。'"
+                    "你转够了 100 圈——9 个春笋盾牌从桌子四周升起，正好挡住头顶飞来的鱼叉。\n人狗摇了摇尾巴：「汪——很好啊小齐夏，你过关了。」"
                 )
             if Toast != null:
-                Toast.show_success("过关 ✓")
+                Toast.show_success("过关 ✓  +3 道")
             _spawn_return_door()
         RotateGameController.Result.LOSE:
             if _result_screen != null:
@@ -151,7 +159,7 @@ func _on_load_save() -> void:
 
 func _on_continue() -> void:
     if Toast != null:
-        Toast.show_info("（走到蓝色门返回道城）")
+        Toast.show_info("（走到蓝色门返回玉城）")
 
 func _spawn_return_door() -> void:
     var ysort: Node = get_node_or_null("../YSortContainer")
@@ -169,7 +177,7 @@ func _spawn_return_door() -> void:
     door.add_child(sprite)
 
     var label: Label = Label.new()
-    label.text = "[返回道城]"
+    label.text = "[返回玉城]"
     label.position = Vector2(-32, 20)
     label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
     label.add_theme_font_size_override("font_size", 11)
@@ -181,8 +189,8 @@ func _spawn_return_door() -> void:
     inter.collision_layer = 2
     inter.collision_mask = 0
     inter.set("interaction_type", 3)   ## SCENE_CHANGE
-    inter.set("scene_path", "res://src/scenes/world/daocheng_main.tscn")
-    inter.set("prompt_text", "[E] 返回道城")
+    inter.set("scene_path", "res://src/scenes/world/yucheng_main.tscn")
+    inter.set("prompt_text", "[E] 返回玉城")
     var ishape: CollisionShape2D = CollisionShape2D.new()
     var icirc: CircleShape2D = CircleShape2D.new()
     icirc.radius = 32

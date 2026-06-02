@@ -12,7 +12,7 @@ enum Kind { INFO, SUCCESS, ERROR }
 
 const COLOR_INFO: Color = Color(0.42, 0.62, 0.86, 1.0)        ## 蓝
 const COLOR_SUCCESS: Color = Color(0.37, 0.80, 0.45, 1.0)     ## 绿
-const COLOR_ERROR: Color = Color(0.72, 0.16, 0.16, 1.0)       ## 暗红（道城风）
+const COLOR_ERROR: Color = Color(0.72, 0.16, 0.16, 1.0)       ## 暗红（赛博中式怪诞风）
 
 var _panel: PanelContainer
 var _label: Label

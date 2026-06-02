@@ -1,9 +1,12 @@
 extends Node
 
-# 道城占位场景生成器（P5 仅用于验证场景切换；P7+ 会被真正的道城逻辑替换）
+# 玉城占位场景生成器
+# P4.7 重命名自 daocheng_builder（原作中 Cycle 1-后期主城是「玉城」而非「道城」；道城是更后期才到达）
+# P5 时仅用于验证场景切换；P7+ 会被真正的玉城逻辑替换
 # - 铺一张视觉差异明显的地图（中间一大块红色危险区，让玩家明确"我在不同场景"）
 # - 玩家初始位置
 # - 一扇返回门（Interactable SCENE_CHANGE → interview_room.tscn）
+# - 一扇前往雨地的门
 
 @export var ground_layer_path: NodePath = NodePath("../Ground")
 @export var ysort_path: NodePath = NodePath("../YSortContainer")
@@ -24,16 +27,15 @@ func _ready() -> void:
 func _build_ground() -> void:
     var ground: TileMapLayer = get_node_or_null(ground_layer_path) as TileMapLayer
     if ground == null:
-        push_error("DaochengBuilder: TileMapLayer not found")
+        push_error("YuchengBuilder: TileMapLayer not found")
         return
     # 24×16 较大的"街区"
     for x in range(-12, 13):
         for y in range(-8, 9):
             var atlas: Vector2i = TILE_GROUND
-            # 中央 6×6 一片血红危险区（让玩家明显感觉"换了地方"）
+            # 中央 6×6 一片血红危险区
             if x >= -3 and x < 3 and y >= -3 and y < 3:
                 atlas = TILE_DANGER
-            # 边缘点缀草地和水
             elif (x + y) % 7 == 0:
                 atlas = TILE_GRASS
             elif (x * y) % 11 == 0 and x != 0 and y != 0:
@@ -51,7 +53,7 @@ func _spawn_return_door() -> void:
 
     var sprite: Sprite2D = Sprite2D.new()
     sprite.texture = SUBMIT_TEX
-    sprite.modulate = Color(0.6, 0.85, 1.0, 1.0)   ## 蓝色（区别于面试房间的黄色提交标记）
+    sprite.modulate = Color(0.6, 0.85, 1.0, 1.0)
     door.add_child(sprite)
 
     var label: Label = Label.new()
@@ -66,7 +68,7 @@ func _spawn_return_door() -> void:
     inter.set_script(interactable_script)
     inter.collision_layer = 2
     inter.collision_mask = 0
-    inter.set("interaction_type", 3)   ## Interactable.Type.SCENE_CHANGE
+    inter.set("interaction_type", 3)
     inter.set("scene_path", return_target)
     inter.set("prompt_text", "[E] 返回面试房间")
     var ishape: CollisionShape2D = CollisionShape2D.new()
@@ -79,18 +81,17 @@ func _spawn_return_door() -> void:
     ysort.add_child(door)
 
 func _spawn_rainy_field_door() -> void:
-    ## 通往雨地的门（红色光球）
     var ysort: Node2D = get_node_or_null(ysort_path) as Node2D
     if ysort == null:
         return
     var interactable_script: Script = load("res://src/scripts/interaction/interactable.gd")
     var door: Node2D = Node2D.new()
     door.name = "RainyFieldDoor"
-    door.position = Vector2(150, 200)   ## 道城左上区域
+    door.position = Vector2(150, 200)   ## 玉城左上区域
 
     var sprite: Sprite2D = Sprite2D.new()
     sprite.texture = SUBMIT_TEX
-    sprite.modulate = Color(1.0, 0.6, 0.4, 1.0)   ## 橙红色（"雨地"暗示）
+    sprite.modulate = Color(1.0, 0.6, 0.4, 1.0)
     sprite.scale = Vector2(1.3, 1.3)
     door.add_child(sprite)
 

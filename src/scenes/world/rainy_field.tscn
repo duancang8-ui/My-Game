@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://brainyfield1"]
+[gd_scene format=3 uid="uid://brainyfield1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]

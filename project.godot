@@ -16,13 +16,6 @@ run/main_scene="uid://binterviewroom1"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
-[display]
-
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/stretch/mode="viewport"
-window/stretch/aspect="expand"
-
 [autoload]
 
 GameState="*res://src/scripts/save/game_state.gd"
@@ -30,6 +23,14 @@ SaveSystem="*res://src/scripts/save/save_system.gd"
 SceneManager="*res://src/scripts/scene/scene_manager.gd"
 DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
 Toast="*res://src/scripts/ui/toast.gd"
+Notebook="*res://src/scripts/ui/notebook.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 
 [editor_plugins]
 

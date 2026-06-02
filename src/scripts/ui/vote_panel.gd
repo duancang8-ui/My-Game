@@ -51,7 +51,7 @@ func _build() -> void:
     _panel.add_child(_vbox)
 
     _title = Label.new()
-    _title.text = "你认为谁是「说谎者」？"
+    _title.text = "你要在纸上写下谁的名字？"
     _title.add_theme_font_size_override("font_size", 18)
     _title.add_theme_color_override("font_color", Color(0.95, 0.92, 0.85, 1))
     _title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -64,13 +64,35 @@ func _build() -> void:
 func show_for_npcs(npc_ids: Array) -> void:
     _clear_buttons()
     for npc_id in npc_ids:
-        var btn := _make_button("指认 " + LiarNpcId.name_of(npc_id), Color(0.95, 0.92, 0.85))
+        if LiarNpcId.is_sheep_master(npc_id):
+            continue   ## 人羊单独渲染（放最下、高对比）
+        var btn := _make_button("写下 " + LiarNpcId.name_of(npc_id), Color(0.95, 0.92, 0.85))
         var id: String = npc_id
         btn.pressed.connect(func() -> void:
             vote_picked.emit(id)
             visible = false
         )
         _vbox.add_child(btn)
+
+    # 分割线提示"另类选项"
+    var divider := Control.new()
+    divider.custom_minimum_size = Vector2(0, 18)
+    _vbox.add_child(divider)
+
+    var sheep_label := Label.new()
+    sheep_label.text = "—— 或者 ——"
+    sheep_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    sheep_label.add_theme_font_size_override("font_size", 11)
+    sheep_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+    _vbox.add_child(sheep_label)
+
+    # 人羊按钮：暗红高对比，让玩家意识到"这是非常规答案"
+    var sheep_btn := _make_button("[ 写下「人羊」 ]", Color(1.0, 0.55, 0.45))
+    sheep_btn.pressed.connect(func() -> void:
+        vote_picked.emit(LiarNpcId.SHEEP_MASTER)
+        visible = false
+    )
+    _vbox.add_child(sheep_btn)
 
     var cancel_spacer := Control.new()
     cancel_spacer.custom_minimum_size = Vector2(0, 12)
