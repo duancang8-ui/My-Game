@@ -70,6 +70,17 @@ func change_to(scene_path: String, fade_duration: float = DEFAULT_FADE) -> void:
     var gs = get_node_or_null("/root/GameState")
     if gs != null:
         gs.current_scene_path = scene_path
+        # P7：进面试房间打个 pending flag，回到玉城时推进 day
+        if scene_path == "res://src/scenes/world/interview_room.tscn":
+            if gs.has_method("mark_pending_day_advance"):
+                gs.mark_pending_day_advance()
+        elif scene_path == "res://src/scenes/world/yucheng_main.tscn":
+            if gs.has_method("consume_pending_day_advance"):
+                gs.consume_pending_day_advance()
+    # P7：通知任务系统场景已进入
+    var qs = get_node_or_null("/root/QuestState")
+    if qs != null and qs.has_method("on_scene_entered"):
+        qs.on_scene_entered(scene_path)
     # 等一帧让新场景加载
     await get_tree().process_frame
 

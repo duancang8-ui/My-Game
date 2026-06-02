@@ -2,7 +2,11 @@ class_name DialogueController
 extends Node
 
 # 把 Interactable.interaction_triggered → DialogueRunner → DialogueBox 的胶水代码
-# 挂在场景里，监听场景内任何 Interactable 的对话触发，启动对应对话
+# 挂在场景里，监听场景内任何 Interactable 的对话触发
+#
+# P7：暴露 dialogue_ended_with_id signal 供 Orchestrator 钩子（如商店、任务）
+
+signal dialogue_ended_with_id(dialogue_id: String)，启动对应对话
 
 @export var dialogue_box_path: NodePath          ## DialogueBox CanvasLayer 节点路径
 @export var interactor_path: NodePath            ## 玩家 PlayerInteractor 节点路径
@@ -94,6 +98,12 @@ func _on_dialogue_ended() -> void:
         var nb = get_node_or_null("/root/Notebook")
         if nb != null and nb.has_method("record"):
             nb.record(ended_id)
+        # P7：通知任务系统
+        var qs = get_node_or_null("/root/QuestState")
+        if qs != null and qs.has_method("on_dialogue_ended"):
+            qs.on_dialogue_ended(ended_id)
+        # P7：对外广播（给 Orchestrator hook，如商店）
+        dialogue_ended_with_id.emit(ended_id)
         _active_dialogue_id = ""
     _runner = null
     _set_player_input_enabled(true)   ## 对话结束恢复玩家控制

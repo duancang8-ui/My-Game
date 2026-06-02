@@ -24,6 +24,7 @@ SceneManager="*res://src/scripts/scene/scene_manager.gd"
 DialogueDatabase="*res://src/scripts/dialogue/dialogue_database.gd"
 Toast="*res://src/scripts/ui/toast.gd"
 Notebook="*res://src/scripts/ui/notebook.gd"
+QuestState="*res://src/scripts/quest/quest_state.gd"
 
 [display]
 

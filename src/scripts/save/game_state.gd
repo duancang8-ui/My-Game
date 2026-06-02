@@ -14,6 +14,8 @@ var current_scene_path: String = ""    ## 当前所在场景（用于存档恢�
 var npc_visit_count: Dictionary = {}   ## P4.6 · a2: dialogue_id → 已访问次数
 var observed_clues: PackedStringArray = PackedStringArray()   ## P4 final · 4.9: 已观察的环境线索
 var scene_positions: Dictionary = {}   ## P5.5: scene_file_path → Vector2，玩家上次离开该场景时的位置
+var inventory: Dictionary = {}         ## P7: item_id → 数量
+var pending_day_advance: bool = false  ## P7: 玩家正要进面试房，回来后 +1 day（防多次触发）
 
 func reset() -> void:
     current_cycle = 1
@@ -26,6 +28,8 @@ func reset() -> void:
     npc_visit_count = {}
     observed_clues = PackedStringArray()
     scene_positions = {}
+    inventory = {}
+    pending_day_advance = false
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
@@ -70,6 +74,50 @@ func get_scene_position(scene_path: String) -> Vector2:
 func has_scene_position(scene_path: String) -> bool:
     return scene_positions.has(scene_path)
 
+# P7：道具栏
+func add_item(item_id: String, qty: int = 1) -> void:
+    if item_id == "" or qty <= 0:
+        return
+    inventory[item_id] = int(inventory.get(item_id, 0)) + qty
+
+func remove_item(item_id: String, qty: int = 1) -> bool:
+    var cur: int = int(inventory.get(item_id, 0))
+    if cur < qty:
+        return false
+    var left: int = cur - qty
+    if left <= 0:
+        inventory.erase(item_id)
+    else:
+        inventory[item_id] = left
+    return true
+
+func has_item(item_id: String) -> bool:
+    return int(inventory.get(item_id, 0)) > 0
+
+func get_item_count(item_id: String) -> int:
+    return int(inventory.get(item_id, 0))
+
+func try_purchase(item_id: String, price: int) -> bool:
+    if dao_count < price:
+        return false
+    dao_count -= price
+    add_item(item_id, 1)
+    return true
+
+# P7：日夜推进
+func mark_pending_day_advance() -> void:
+    pending_day_advance = true
+
+func consume_pending_day_advance() -> bool:
+    # 返回 true 表示 day 真的被推进了。10 天满 → 自动 +1 cycle
+    if not pending_day_advance:
+        return false
+    pending_day_advance = false
+    current_day += 1
+    if current_day > 10:
+        advance_cycle()   # 已存在：current_cycle += 1; current_day = 1
+    return true
+
 func add_dao(amount: int) -> void:
     dao_count += amount
 
@@ -78,7 +126,6 @@ func advance_cycle() -> void:
     current_day = 1
 
 func to_dict() -> Dictionary:
-    # scene_positions: 转 {scene_path: {x, y}} 以便 ConfigFile 跨平台序列化
     var sp_serialized: Dictionary = {}
     for k in scene_positions.keys():
         var v: Vector2 = scene_positions[k]
@@ -94,6 +141,8 @@ func to_dict() -> Dictionary:
         "npc_visit_count": npc_visit_count.duplicate(),
         "observed_clues": Array(observed_clues),
         "scene_positions": sp_serialized,
+        "inventory": inventory.duplicate(),
+        "pending_day_advance": pending_day_advance,
     }
 
 func from_dict(data: Dictionary) -> void:
@@ -108,7 +157,6 @@ func from_dict(data: Dictionary) -> void:
     var visit_data = data.get("npc_visit_count", {})
     npc_visit_count = {} if not (visit_data is Dictionary) else (visit_data as Dictionary).duplicate()
     observed_clues = PackedStringArray(data.get("observed_clues", []))
-    # scene_positions：从 {scene_path: {x, y}} 还原成 Dictionary[String, Vector2]
     scene_positions = {}
     var sp_data = data.get("scene_positions", {})
     if sp_data is Dictionary:
@@ -116,3 +164,6 @@ func from_dict(data: Dictionary) -> void:
             var entry = sp_data[k]
             if entry is Dictionary:
                 scene_positions[k] = Vector2(float(entry.get("x", 0)), float(entry.get("y", 0)))
+    var inv_data = data.get("inventory", {})
+    inventory = {} if not (inv_data is Dictionary) else (inv_data as Dictionary).duplicate()
+    pending_day_advance = bool(data.get("pending_day_advance", false))

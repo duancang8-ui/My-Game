@@ -36,6 +36,8 @@ func _register_builtin_dialogues() -> void:
 	# P4 final · 4.8：说谎者赢后同房间触发雨后春笋的衔接过场
 	_register_rainy_in_room_intro()
 	_register_rainy_field_intro()
+	# P7：玉城 8 NPC 对话
+	_register_yucheng_npc_dialogues()
 
 func register(dialogue_id: String, lines: Array, start_id: String) -> void:
 	_dialogues_by_id[dialogue_id] = lines
@@ -352,6 +354,77 @@ func _register_rainy_in_room_intro() -> void:
 	for i in range(lines.size() - 1):
 		lines[i].auto_next_line_id = lines[i + 1].line_id
 	register("rainy_in_room_intro", lines, lines[0].line_id)
+
+# === P7：玉城 8 NPC 对话（全部自创笔触，仅保留人物姓名作为事实参考）===
+
+func _register_yucheng_npc_dialogues() -> void:
+	# 路人 A：茫然女
+	_yu_simple("yu_passer_a", "茫然的女路人",
+		"（她攥着自己的袖子，眼神到处飘）\n[color=#aaaaaa]这地方我也不知道是怎么进来的。[/color]\n每次睁开眼，就已经站在这条街上了。")
+
+	# 路人 B：受惊男
+	_yu_simple("yu_passer_b", "受惊的男路人",
+		"（他下意识捂住嘴，左右看了一眼）\n[color=#b71c1c]你千万别往东边走。[/color]\n那边的废墟……飘着东西，我亲眼看到的。")
+
+	# 顾禹·云游者
+	_yu_two_round("yu_gu_yu", "顾禹",
+		"（他穿着一件磨破袖口的灰色长衣，背着一只布袋）\n我叫[color=#ffd93d]顾禹[/color]。这几年我一直在几座城之间走——\n[color=#aaaaaa]这边是玉城。再往东是涡城，再远，是道城。[/color]\n每个地方有每个地方的规矩。",
+		"[color=#aaaaaa]（他打量了你一下，目光落在你身上）[/color]\n你能从玉城活下来，已经不容易了。\n[color=#888]眼睛里还有光，那就慢慢走。[/color]\n慢慢闻。")
+
+	# 思维·智者
+	_yu_two_round("yu_si_wei", "思维",
+		"（她坐在天堂口的石阶上，膝盖上摊开一本卷边的本子）\n[color=#ffd93d]叫我「思维」就好。[/color]\n你听懂[color=#ffd93d]「清香」[/color]了吗？\n[color=#aaaaaa]那不是味道，是别人「神力」的形状。[/color]",
+		"（她合上本子，看了看你）\n玉城收集「玉」、涡城收集「涡」、道城收集「道」。\n[color=#aaaaaa]这边的规矩是「玉」。你身上那点「道」，是别处赚的吧？[/color]\n[color=#888]能赚到就够走一阵子了。[/color]")
+
+	# 聂北·玉城首领
+	_yu_two_round("yu_nie_bei", "聂北",
+		"（一个高大的男人站在天堂口前，双手抱胸）\n[color=#ffd93d]我是聂北。[/color]\n玉城活下来的人，差不多都在我手下。",
+		"（他往面试房间方向偏了偏头）\n想成为我们的人？\n[color=#ffd93d]先去面试房间。[/color]\n[color=#888]从那儿活着回来的，我才记得住名字。[/color]")
+
+	# 商店老板（v1 简短，关闭后由 YuchengOrchestrator 弹出 ShopPanel）
+	_yu_simple("yu_shopkeeper", "玉城货摊老板",
+		"（他用衣袖擦了擦摊面上的灰）\n看你身上还有点[color=#ffd93d]「道」[/color]——\n这边几样东西，[color=#aaaaaa]也许下一回合用得上[/color]。")
+
+	# 郑英雄·清香者
+	_yu_two_round("yu_zheng_yingxiong", "郑英雄",
+		"（他在原地深吸了一口，皱起眉头看了你一眼）\n我叫[color=#ffd93d]郑英雄[/color]。\n[color=#aaaaaa]我能闻到东西——[/color]不是普通的味道，是[color=#ffd93d]「神力」[/color]的味道。\n[color=#888]你身上有一股我没闻过的清香。[/color]",
+		"（他靠近了一些，几乎要碰到你的肩膀）\n如果是[color=#ffd93d]「灵闻」[/color]，那你或许能像我一样——\n[color=#aaaaaa]分辨别人的「清香」。[/color]\n[color=#888]下次进面试房间前，多闻闻每个人。也许会有用。[/color]")
+
+	# 信息员／告示牌
+	_yu_simple("yu_info_board", "玉城信息员",
+		"（一块旧告示牌，附近站着一个戴帽子的男人在登记数字。他朝你点了下头）\n[color=#aaaaaa]规则。[/color]\n1. 这座城叫[color=#ffd93d]玉城[/color]。\n2. 我们要收集足够的「玉」。\n3. [color=#ffd93d]面试房间[/color]，是进出每一回合的门。\n4. 「道」可以在[color=#ffd93d]西区货摊[/color]换东西。")
+
+# === P7 辅助：玉城 NPC 对话注册 helpers ===
+
+func _yu_simple(dialogue_id: String, speaker: String, body: String) -> void:
+	# 单行版本：玩家走近 → NPC 说一段 → 结束
+	var l: DialogueLine = DialogueLine.new()
+	l.line_id = dialogue_id + "_01"
+	l.speaker_name = speaker
+	l.text = body
+	register(dialogue_id, [l], l.line_id)
+
+func _yu_two_round(dialogue_id: String, speaker: String, body1: String, body2: String) -> void:
+	# 两轮版本：v1 自介 + 一个「再问一句」选项 → v2 玩家追问 / 直接走开
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = dialogue_id + "_01"
+	l1.speaker_name = speaker
+	l1.text = body1
+	var c_more: DialogueChoice = DialogueChoice.new()
+	c_more.label = "再问他一句"
+	c_more.next_line_id = dialogue_id + "_02"
+	var c_leave: DialogueChoice = DialogueChoice.new()
+	c_leave.label = "（点头，先走了）"
+	c_leave.ends_dialogue = true
+	l1.choices = [c_more, c_leave] as Array[DialogueChoice]
+
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = dialogue_id + "_02"
+	l2.speaker_name = speaker
+	l2.text = body2
+	l2.auto_next_line_id = ""
+
+	register(dialogue_id, [l1, l2], l1.line_id)
 
 # === 雨后春笋（人狗）入场过场（沿用 P6） ===
 

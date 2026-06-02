@@ -1,10 +1,13 @@
-[gd_scene format=3 uid="uid://byuchengmain1"]
+[gd_scene load_steps=8 format=3 uid="uid://byuchengmain1"]
 
 [ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://src/scripts/test/yucheng_builder.gd" id="3_builder"]
 [ext_resource type="PackedScene" uid="uid://bdialoguebox1" path="res://src/scenes/ui/dialogue_box.tscn" id="4_dlgbox"]
 [ext_resource type="Script" uid="uid://ddws0fkvtamqv" path="res://src/scripts/dialogue/dialogue_controller.gd" id="5_dlgctrl"]
+[ext_resource type="Script" path="res://src/scripts/ui/shop_panel.gd" id="6_shop"]
+[ext_resource type="Script" path="res://src/scripts/test/yucheng_orchestrator.gd" id="7_orch"]
+[ext_resource type="Script" path="res://src/scripts/ui/yucheng_hud.gd" id="8_hud"]
 
 [node name="YuchengMain" type="Node2D"]
 
@@ -15,14 +18,12 @@ tile_set = ExtResource("1_tileset")
 y_sort_enabled = true
 
 [node name="Player" parent="YSortContainer" instance=ExtResource("2_player")]
-position = Vector2(400, 300)
+position = Vector2(0, 0)
 
 [node name="Builder" type="Node" parent="."]
 script = ExtResource("3_builder")
 ground_layer_path = NodePath("../Ground")
 ysort_path = NodePath("../YSortContainer")
-return_door_position = Vector2(550, 400)
-return_target = "res://src/scenes/world/interview_room.tscn"
 
 [node name="DialogueBox" parent="." instance=ExtResource("4_dlgbox")]
 
@@ -30,3 +31,14 @@ return_target = "res://src/scenes/world/interview_room.tscn"
 script = ExtResource("5_dlgctrl")
 dialogue_box_path = NodePath("../DialogueBox")
 interactor_path = NodePath("../YSortContainer/Player/Interactor")
+
+[node name="ShopPanel" type="CanvasLayer" parent="."]
+script = ExtResource("6_shop")
+
+[node name="YuchengOrchestrator" type="Node" parent="."]
+script = ExtResource("7_orch")
+dialogue_controller_path = NodePath("../DialogueController")
+shop_panel_path = NodePath("../ShopPanel")
+
+[node name="YuchengHud" type="CanvasLayer" parent="."]
+script = ExtResource("8_hud")
