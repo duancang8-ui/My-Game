@@ -12,7 +12,7 @@ config_version=5
 
 config/name="MyGame"
 config/description="《十日终焉》改编同人游戏 — 2.5D 等距规则怪谈轮回叙事"
-run/main_scene="uid://binterviewroom1"
+run/main_scene="uid://bmainmenu1"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
@@ -26,6 +26,7 @@ Toast="*res://src/scripts/ui/toast.gd"
 Notebook="*res://src/scripts/ui/notebook.gd"
 QuestState="*res://src/scripts/quest/quest_state.gd"
 AudioManager="*res://src/scripts/audio/audio_manager.gd"
+TutorialHints="*res://src/scripts/ui/tutorial_hints.gd"
 
 [display]
 

@@ -18,6 +18,7 @@ var inventory: Dictionary = {}         ## P7: item_id → 数量
 var pending_day_advance: bool = false  ## P7: 玩家正要进面试房，回来后 +1 day（防多次触发）
 var sniffed_npcs: PackedStringArray = PackedStringArray()   ## P9: 灵闻笔记已使用过的 NPC dialogue_id
 var rat_bet_mode: bool = false   ## P8.5：本次人鼠关是否为「赌命」模式（赢得多/输了触发朱雀处决）
+var tutorial_seen: PackedStringArray = PackedStringArray()   ## M3：已显示过教学提示的 scene_path
 
 func reset() -> void:
     current_cycle = 1
@@ -34,6 +35,7 @@ func reset() -> void:
     pending_day_advance = false
     sniffed_npcs = PackedStringArray()
     rat_bet_mode = false
+    tutorial_seen = PackedStringArray()
 
 func mark_npc_met(npc_id: String) -> void:
     if not met_npcs.has(npc_id):
@@ -108,6 +110,16 @@ func try_purchase(item_id: String, price: int) -> bool:
     add_item(item_id, 1)
     return true
 
+# M3：教学提示
+func mark_tutorial_seen(scene_path: String) -> bool:
+    if scene_path == "" or tutorial_seen.has(scene_path):
+        return false
+    tutorial_seen.append(scene_path)
+    return true
+
+func has_seen_tutorial(scene_path: String) -> bool:
+    return tutorial_seen.has(scene_path)
+
 # P9：灵闻笔记 — 记录已"闻过"的 NPC
 func mark_sniffed(dialogue_id: String) -> bool:
     if dialogue_id == "" or sniffed_npcs.has(dialogue_id):
@@ -158,6 +170,7 @@ func to_dict() -> Dictionary:
         "inventory": inventory.duplicate(),
         "pending_day_advance": pending_day_advance,
         "sniffed_npcs": Array(sniffed_npcs),
+        "tutorial_seen": Array(tutorial_seen),
     }
 
 func from_dict(data: Dictionary) -> void:
@@ -183,3 +196,4 @@ func from_dict(data: Dictionary) -> void:
     inventory = {} if not (inv_data is Dictionary) else (inv_data as Dictionary).duplicate()
     pending_day_advance = bool(data.get("pending_day_advance", false))
     sniffed_npcs = PackedStringArray(data.get("sniffed_npcs", []))
+    tutorial_seen = PackedStringArray(data.get("tutorial_seen", []))
