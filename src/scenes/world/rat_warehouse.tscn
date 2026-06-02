@@ -1,0 +1,67 @@
+[gd_scene load_steps=9 format=3 uid="uid://bratwarehouse1"]
+
+[ext_resource type="TileSet" uid="uid://b3p1plctileset" path="res://src/assets/tiles/iso_tileset_placeholder.tres" id="1_tileset"]
+[ext_resource type="PackedScene" uid="uid://bplayerscene1" path="res://src/scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://bdialoguebox1" path="res://src/scenes/ui/dialogue_box.tscn" id="3_dlgbox"]
+[ext_resource type="Script" uid="uid://ddws0fkvtamqv" path="res://src/scripts/dialogue/dialogue_controller.gd" id="4_dlgctrl"]
+[ext_resource type="Script" path="res://src/scripts/rat_game/rat_warehouse_builder.gd" id="5_builder"]
+[ext_resource type="Script" path="res://src/scripts/rat_game/rat_game_controller.gd" id="6_ctrl"]
+[ext_resource type="Script" path="res://src/scripts/rat_game/rat_game_orchestrator.gd" id="7_orch"]
+[ext_resource type="Script" path="res://src/scripts/ui/rat_game_hud.gd" id="8_hud"]
+[ext_resource type="Script" uid="uid://hw16wwn6m6js" path="res://src/scripts/cutscene/cutscene_controller.gd" id="9_cutscene"]
+
+[node name="RatWarehouse" type="Node2D"]
+
+[node name="Ground" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_tileset")
+
+[node name="YSortContainer" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="YSortContainer" instance=ExtResource("2_player")]
+position = Vector2(180, 100)
+
+[node name="Builder" type="Node" parent="."]
+script = ExtResource("5_builder")
+ground_layer_path = NodePath("../Ground")
+ysort_path = NodePath("../YSortContainer")
+
+[node name="DialogueBox" parent="." instance=ExtResource("3_dlgbox")]
+
+[node name="DialogueController" type="Node" parent="."]
+script = ExtResource("4_dlgctrl")
+dialogue_box_path = NodePath("../DialogueBox")
+interactor_path = NodePath("../YSortContainer/Player/Interactor")
+
+[node name="IntroCutscene" type="Node" parent="."]
+script = ExtResource("9_cutscene")
+dialogue_box_path = NodePath("../DialogueBox")
+player_path = NodePath("../YSortContainer/Player")
+dialogue_id = "rat_warehouse_intro"
+auto_start = false
+lock_player = true
+
+[node name="EndingCutscene" type="Node" parent="."]
+script = ExtResource("9_cutscene")
+dialogue_box_path = NodePath("../DialogueBox")
+player_path = NodePath("../YSortContainer/Player")
+dialogue_id = ""
+auto_start = false
+lock_player = true
+
+[node name="RatGameController" type="Node" parent="."]
+script = ExtResource("6_ctrl")
+time_limit = 300.0
+
+[node name="RatGameHud" type="CanvasLayer" parent="."]
+script = ExtResource("8_hud")
+
+[node name="RatGameOrchestrator" type="Node" parent="."]
+script = ExtResource("7_orch")
+controller_path = NodePath("../RatGameController")
+hud_path = NodePath("../RatGameHud")
+intro_cutscene_path = NodePath("../IntroCutscene")
+ending_cutscene_path = NodePath("../EndingCutscene")
+dialogue_controller_path = NodePath("../DialogueController")
+npc_door_path = NodePath("../YSortContainer/RatNpc/Interactable")
+return_scene = "res://src/scenes/world/yucheng_main.tscn"

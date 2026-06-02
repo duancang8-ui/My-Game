@@ -31,6 +31,8 @@ const NPCS: Array = [
 	["shopkeeper",     "yu_shopkeeper",     "玉城货摊老板",   Vector2(-260, 40),   Color(0.85, 0.55, 0.25), "shop"],
 	["zheng_yingxiong","yu_zheng_yingxiong","郑英雄·清香者",  Vector2(-230, -30),  Color(0.45, 0.75, 1.0),  ""],
 	["info_board",     "yu_info_board",     "玉城信息员",     Vector2(0, 40),      Color(0.95, 0.92, 0.85), "info"],
+	# P8：东区废墟旁，戴鼠面具的女孩开了个小考验
+	["rat_npc",        "rat_npc_yucheng",   "人鼠·瘦小女孩", Vector2(320, -60),   Color(0.7, 0.65, 0.6),   "game"],
 ]
 
 func _ready() -> void:
@@ -141,6 +143,8 @@ func _spawn_one_npc(ysort: Node2D, interactable_script: Script,
 		prompt_prefix = "[E] 找老板买点东西 · "
 	elif special == "info":
 		prompt_prefix = "[E] 看一眼信息板 · "
+	elif special == "game":
+		prompt_prefix = "[E] 听听她的「考验」 · "
 	inter.set("prompt_text", prompt_prefix + "与 " + display_name + " 交谈")
 	var ishape: CollisionShape2D = CollisionShape2D.new()
 	var icirc: CircleShape2D = CircleShape2D.new()

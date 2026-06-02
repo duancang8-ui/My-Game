@@ -6,7 +6,8 @@ extends Node
 #
 # P7：暴露 dialogue_ended_with_id signal 供 Orchestrator 钩子（如商店、任务）
 
-signal dialogue_ended_with_id(dialogue_id: String)，启动对应对话
+signal dialogue_ended_with_id(dialogue_id: String)
+signal choice_picked_action(action_id: String)   ## P8：选项的副作用标记，启动对应对话
 
 @export var dialogue_box_path: NodePath          ## DialogueBox CanvasLayer 节点路径
 @export var interactor_path: NodePath            ## 玩家 PlayerInteractor 节点路径
@@ -71,7 +72,13 @@ func _start_dialogue(dialogue_id: String) -> void:
     _runner.start(lines, start_id)
 
 func _on_choice_picked(index: int) -> void:
-    if _runner != null:
+    # P8：先 emit action_id 让 Orchestrator 钩子有机会处理（例如付道币 / 切场景）
+    if _runner != null and _runner.current_line != null:
+        var choices: Array = _runner.current_line.choices
+        if index >= 0 and index < choices.size():
+            var c: DialogueChoice = choices[index] as DialogueChoice
+            if c != null and c.action_id != "":
+                choice_picked_action.emit(c.action_id)
         _runner.pick_choice(index)
 
 func _on_continue_pressed() -> void:

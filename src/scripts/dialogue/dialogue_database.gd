@@ -38,6 +38,8 @@ func _register_builtin_dialogues() -> void:
 	_register_rainy_field_intro()
 	# P7：玉城 8 NPC 对话
 	_register_yucheng_npc_dialogues()
+	# P8：人鼠 · 仓库寻道（玉城东区入口 + 仓库内对话）
+	_register_rat_warehouse_dialogues()
 
 func register(dialogue_id: String, lines: Array, start_id: String) -> void:
 	_dialogues_by_id[dialogue_id] = lines
@@ -425,6 +427,173 @@ func _yu_two_round(dialogue_id: String, speaker: String, body1: String, body2: S
 	l2.auto_next_line_id = ""
 
 	register(dialogue_id, [l1, l2], l1.line_id)
+
+# === P8：人鼠 · 仓库寻道（全部原创笔触，仅保留人物身份和游戏机制作为事实参考）===
+
+func _register_rat_warehouse_dialogues() -> void:
+	_register_rat_pitch()
+	_register_rat_warehouse_intro()
+	_register_rat_boxes()
+	_register_rat_hamster_note()
+	_register_rat_door_talk()
+	_register_rat_endings()
+
+func _register_rat_pitch() -> void:
+	# 玉城东区门口：人鼠向玩家推销游戏
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "rat_pitch_01"
+	l1.speaker_name = "人鼠"
+	l1.text = "（一个身材瘦小的女人站在仓库门口，戴着一个发黄的鼠面具。她的声音很轻）\n[color=#aaaaaa]难得有人光顾我这儿……要不要试试我的[color=#ffd93d]「考验」[/color]？[/color]"
+	var c1: DialogueChoice = DialogueChoice.new()
+	c1.label = "什么规则？"
+	c1.next_line_id = "rat_pitch_02"
+	var c2: DialogueChoice = DialogueChoice.new()
+	c2.label = "（先看看，走开）"
+	c2.ends_dialogue = true
+	l1.choices = [c1, c2] as Array[DialogueChoice]
+
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "rat_pitch_02"
+	l2.speaker_name = "人鼠"
+	l2.text = "（她笑得很温柔）\n门票：[color=#ffd93d]1 个「道」[/color]。\n[color=#aaaaaa]这背后的小仓库里，[/color][color=#ffd93d]现在[/color][color=#aaaaaa]有一个「道」。[/color]\n[color=#ffd93d]5 分钟[/color]之内找到它、带出来，「道」就归你了。"
+	var c3: DialogueChoice = DialogueChoice.new()
+	c3.label = "找不到呢？"
+	c3.next_line_id = "rat_pitch_03"
+	var c4: DialogueChoice = DialogueChoice.new()
+	c4.label = "（开始）付 1 道入场"
+	c4.action_id = "enter_rat_warehouse"
+	c4.ends_dialogue = true
+	var c5: DialogueChoice = DialogueChoice.new()
+	c5.label = "（再想想，走开）"
+	c5.ends_dialogue = true
+	l2.choices = [c3, c4, c5] as Array[DialogueChoice]
+
+	var l3: DialogueLine = DialogueLine.new()
+	l3.line_id = "rat_pitch_03"
+	l3.speaker_name = "人鼠"
+	l3.text = "（她「噗嗤」笑出来）\n找不到？\n[color=#aaaaaa]那门票就作废啦——损失 1 个「道」而已。[/color]\n我又不要你的命。"
+	var c6: DialogueChoice = DialogueChoice.new()
+	c6.label = "（开始）付 1 道入场"
+	c6.action_id = "enter_rat_warehouse"
+	c6.ends_dialogue = true
+	var c7: DialogueChoice = DialogueChoice.new()
+	c7.label = "（算了，走开）"
+	c7.ends_dialogue = true
+	l3.choices = [c6, c7] as Array[DialogueChoice]
+
+	register("rat_npc_yucheng", [l1, l2, l3], l1.line_id)
+
+func _register_rat_warehouse_intro() -> void:
+	# 进入仓库后，人鼠在门口再宣布一次规则（"现在"这个词出现两次，强化破绽 1）
+	var lines: Array[DialogueLine] = []
+	lines.append(_speaker_line("rat_intro_01", "人鼠",
+		"（她把门带上，靠在门框上看你）\n[color=#aaaaaa]我再说一次规则——[/color]"))
+	lines.append(_speaker_line("rat_intro_02", "人鼠",
+		"[color=#ffd93d]现在[/color]这个房间里，有一个「道」。\n[color=#ffd93d]5 分钟[/color]之内找到它，并把它带出去。\n找到了，归你。"))
+	lines.append(_speaker_line("rat_intro_03", "人鼠",
+		"（她抬起手指了指头顶的白炽灯开关）\n[color=#aaaaaa]灯随你开关。[/color]\n（她把面具下的笑藏好）\n祝你好运。"))
+	for i in range(lines.size() - 1):
+		lines[i].auto_next_line_id = lines[i + 1].line_id
+	register("rat_warehouse_intro", lines, lines[0].line_id)
+
+func _register_rat_boxes() -> void:
+	# 6 个箱子的翻找反馈（每个 1 行短旁白）
+	var contents: Array = [
+		["rat_box_1", "罐头。一打蚕豆罐头，都封着。"],
+		["rat_box_2", "几条旧衣服。袖口磨破了。"],
+		["rat_box_3", "废纸一堆。报纸 + 包装纸，都没字。"],
+		["rat_box_4", "塑料盘子和碗。都是干净的，像是没人用过。"],
+		["rat_box_5", "螺丝刀 / 扳手 / 钉子。还有一卷胶带。"],
+		["rat_box_6", "更多旧衣服。底下也没东西。"],
+	]
+	for entry in contents:
+		var dialogue_id: String = entry[0]
+		var body: String = entry[1]
+		var l: DialogueLine = DialogueLine.new()
+		l.line_id = dialogue_id + "_01"
+		l.speaker_name = "齐夏"
+		l.text = "[color=#aaaaaa]（你翻开这个箱子）[/color]\n[color=#888]%s[/color]\n[color=#aaaaaa]没有发光的小球。[/color]" % body
+		register(dialogue_id, [l], l.line_id)
+
+func _register_rat_hamster_note() -> void:
+	# 仓库门口的小贴纸 —— 触发齐夏关键内省
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "rat_hamster_note_01"
+	l1.speaker_name = "齐夏"
+	l1.text = "[color=#aaaaaa]（你瞥见门框上贴了一张旧标签）[/color]\n[color=#888]——「请爱护展品 · 仓鼠协会赞助」[/color]"
+	l1.auto_next_line_id = "rat_hamster_note_02"
+
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "rat_hamster_note_02"
+	l2.speaker_name = "齐夏"
+	l2.text = "[color=#aaaaaa]（你愣了一下）[/color]\n[color=#ffd93d]仓鼠……[/color]\n[color=#888]那种东西从不在地上翻找。它们把要紧的东西——[/color]\n[color=#b71c1c]含在嘴里、藏在颊袋里。[/color]"
+	l2.auto_next_line_id = "rat_hamster_note_03"
+
+	var l3: DialogueLine = DialogueLine.new()
+	l3.line_id = "rat_hamster_note_03"
+	l3.speaker_name = "齐夏"
+	l3.text = "[color=#aaaaaa]（你看了一眼门口的人鼠）[/color]\n[color=#888]……她的口袋鼓鼓的。[/color]"
+	register("rat_hamster_note", [l1, l2, l3], l1.line_id)
+
+func _register_rat_door_talk() -> void:
+	# 站在仓库内、走到门口跟人鼠对话
+	# v1：还没观察过仓鼠协会贴纸 → 只能寒暄
+	var v1: DialogueLine = DialogueLine.new()
+	v1.line_id = "rat_door_v1_01"
+	v1.speaker_name = "人鼠"
+	v1.text = "（她从面具的小孔里盯着你）\n[color=#aaaaaa]怎么了？[/color]\n[color=#888]再不去翻箱子，时间就要到了哦。[/color]"
+	var ca: DialogueChoice = DialogueChoice.new()
+	ca.label = "（回去翻箱子）"
+	ca.ends_dialogue = true
+	v1.choices = [ca] as Array[DialogueChoice]
+	register("rat_door_talk", [v1], v1.line_id)
+
+	# v2：观察过仓鼠协会贴纸后 → 多一个「摸她口袋」选项
+	# 这是「赢」的入口；Orchestrator 监听 dialogue_ended_with_id == "rat_door_talk_v2_win" 时调 reveal_win
+	var w1: DialogueLine = DialogueLine.new()
+	w1.line_id = "rat_door_v2_01"
+	w1.speaker_name = "人鼠"
+	w1.text = "（她从面具的小孔里盯着你）\n[color=#aaaaaa]怎么了？[/color]\n[color=#888]再不去翻箱子，时间就要到了哦。[/color]"
+	var cb: DialogueChoice = DialogueChoice.new()
+	cb.label = "「（伸手摸她口袋）」"
+	cb.next_line_id = "rat_door_v2_win"
+	var cc: DialogueChoice = DialogueChoice.new()
+	cc.label = "（回去翻箱子）"
+	cc.ends_dialogue = true
+	w1.choices = [cb, cc] as Array[DialogueChoice]
+
+	var w2: DialogueLine = DialogueLine.new()
+	w2.line_id = "rat_door_v2_win"
+	w2.speaker_name = "齐夏"
+	w2.text = "[color=#aaaaaa]（你忽然把手伸了过去）[/color]\n[color=#b71c1c]——你的手指碰到了一个温热的小球。[/color]\n[color=#ffd93d]你掏出了它。[/color]"
+	register("rat_door_talk_v2", [w1, w2], w1.line_id)
+
+func _register_rat_endings() -> void:
+	# 胜利
+	var w: DialogueLine = DialogueLine.new()
+	w.line_id = "rat_win_01"
+	w.speaker_name = "人鼠"
+	w.text = "（她的呼吸顿住了）\n[color=#b71c1c]——你怎么知道的？[/color]\n[color=#aaaaaa]（她退了一步，整个人在面具下颤抖）[/color]\n好……你赢了。这「道」归你了。"
+	register("rat_win", [w], w.line_id)
+
+	# 超时失败
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "rat_lose_01"
+	l1.speaker_name = "人鼠"
+	l1.text = "（她准时推开门）\n[color=#aaaaaa]时间到。[/color]\n[color=#888]翻了一遍也没找到吗？真可惜。[/color]"
+	l1.auto_next_line_id = "rat_lose_02"
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "rat_lose_02"
+	l2.speaker_name = "人鼠"
+	l2.text = "（她伸出手，准备把你的「道」收回去）\n[color=#aaaaaa]别灰心啦，下次再来嘛。[/color]"
+	register("rat_lose_timeout", [l1, l2], l1.line_id)
+
+	# 主动放弃
+	var g: DialogueLine = DialogueLine.new()
+	g.line_id = "rat_giveup_01"
+	g.speaker_name = "人鼠"
+	g.text = "（她让开了门）\n[color=#aaaaaa]要走？没关系。门票还是不退的——下次想清楚再来。[/color]"
+	register("rat_giveup", [g], g.line_id)
 
 # === 雨后春笋（人狗）入场过场（沿用 P6） ===
 
