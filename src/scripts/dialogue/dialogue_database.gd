@@ -40,6 +40,8 @@ func _register_builtin_dialogues() -> void:
 	_register_yucheng_npc_dialogues()
 	# P8：人鼠 · 仓库寻道（玉城东区入口 + 仓库内对话）
 	_register_rat_warehouse_dialogues()
+	# P10：地牛 · 黑熊地下室
+	_register_bear_lair_dialogues()
 
 func register(dialogue_id: String, lines: Array, start_id: String) -> void:
 	_dialogues_by_id[dialogue_id] = lines
@@ -622,6 +624,124 @@ func _register_rat_endings() -> void:
 	g.speaker_name = "人鼠"
 	g.text = "（她让开了门）\n[color=#aaaaaa]要走？没关系。门票还是不退的——下次想清楚再来。[/color]"
 	register("rat_giveup", [g], g.line_id)
+
+# === P10：地牛 · 黑熊地下室（全部原创笔触，仅保留事实参考数据）===
+
+func _register_bear_lair_dialogues() -> void:
+	_register_bear_eyeglass_pitch()
+	_register_bear_earth_cow_pitch()
+	_register_bear_lair_intro()
+	_register_bear_endings()
+
+func _register_bear_eyeglass_pitch() -> void:
+	# 玉城里某处，戴眼镜的「良人」过来搭话
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "bear_eye_01"
+	l1.speaker_name = "戴眼镜的「良人」"
+	l1.text = "（他对你招了招手，但保持着距离）\n[color=#aaaaaa]哥们儿——你也是「良人」吧？看你眼神还在。[/color]\n我们找到个不错的[color=#ffd93d]牛类游戏[/color]，要不要去赚点「道」？"
+	var ca: DialogueChoice = DialogueChoice.new()
+	ca.label = "「牛类」？什么意思？"
+	ca.next_line_id = "bear_eye_02"
+	var cb: DialogueChoice = DialogueChoice.new()
+	cb.label = "（点头）带我去看看"
+	cb.next_line_id = "bear_eye_03"
+	var cc: DialogueChoice = DialogueChoice.new()
+	cc.label = "（摇头）算了"
+	cc.ends_dialogue = true
+	l1.choices = [ca, cb, cc] as Array[DialogueChoice]
+
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "bear_eye_02"
+	l2.speaker_name = "戴眼镜的「良人」"
+	l2.text = "（他压低声音）\n[color=#ffd93d]每个动物面具是一种游戏类型。[/color]\n我们之前在你东边那块儿吃了个亏，要不是有「道」当门票，恐怕都死在那儿了。\n这一次的「牛」据说[color=#ffd93d]奖励特别厚[/color]——通关人数有多少，每人就拿多少「道」。"
+	var cd: DialogueChoice = DialogueChoice.new()
+	cd.label = "（点头）带我去看看"
+	cd.next_line_id = "bear_eye_03"
+	var ce: DialogueChoice = DialogueChoice.new()
+	ce.label = "（摇头）我自己想想"
+	ce.ends_dialogue = true
+	l2.choices = [cd, ce] as Array[DialogueChoice]
+
+	var l3: DialogueLine = DialogueLine.new()
+	l3.line_id = "bear_eye_03"
+	l3.speaker_name = "戴眼镜的「良人」"
+	l3.text = "（他朝南区天堂口的方向努了努嘴）\n[color=#aaaaaa]那座灰房子门口的牛面具男人——他就在那儿。[/color]\n[color=#888]我先回去等你。[/color]\n（话毕，他转身离开）"
+	register("bear_eyeglass_pitch", [l1, l2, l3], l1.line_id)
+
+func _register_bear_earth_cow_pitch() -> void:
+	# 地牛 NPC：在玉城的另一侧，给玩家介绍规则
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "bear_cow_01"
+	l1.speaker_name = "地牛"
+	l1.text = "（一个戴干净水牛面具的男人，黑西装一尘不染。他注视着你，似乎能透过面具「看」到你）\n[color=#aaaaaa]我不是「人牛」。[/color]\n[color=#ffd93d]我是地牛。[/color]\n叫错了，会让你吃不了兜着走。"
+	l1.auto_next_line_id = "bear_cow_02"
+
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "bear_cow_02"
+	l2.speaker_name = "地牛"
+	l2.text = "（他指了指身后那扇阴暗的大门）\n规则：[color=#ffd93d]门票 1 个「道」[/color]。\n下面是一个 90 秒的考验。撑过去——\n[color=#ffd93d]+10 个「道」[/color]。"
+	var ca: DialogueChoice = DialogueChoice.new()
+	ca.label = "撑不过去呢？"
+	ca.next_line_id = "bear_cow_03"
+	var cb: DialogueChoice = DialogueChoice.new()
+	cb.label = "（付 1 道入场）"
+	cb.action_id = "enter_bear_lair"
+	cb.ends_dialogue = true
+	var cc: DialogueChoice = DialogueChoice.new()
+	cc.label = "（先想想）"
+	cc.ends_dialogue = true
+	l2.choices = [ca, cb, cc] as Array[DialogueChoice]
+
+	var l3: DialogueLine = DialogueLine.new()
+	l3.line_id = "bear_cow_03"
+	l3.speaker_name = "地牛"
+	l3.text = "（他笑了笑——是个不太友好的笑）\n[color=#b71c1c]那门票就当我赏你的。[/color]\n你最好别想，「我能跑就行了」——\n[color=#aaaaaa]我的「考验」从来不会让人随便跑出来。[/color]"
+	var cd: DialogueChoice = DialogueChoice.new()
+	cd.label = "（付 1 道入场）"
+	cd.action_id = "enter_bear_lair"
+	cd.ends_dialogue = true
+	var ce: DialogueChoice = DialogueChoice.new()
+	ce.label = "（暂时不去）"
+	ce.ends_dialogue = true
+	l3.choices = [cd, ce] as Array[DialogueChoice]
+	register("bear_earth_cow_pitch", [l1, l2, l3], l1.line_id)
+
+func _register_bear_lair_intro() -> void:
+	# 玩家进地下室 → 地牛简短宣告 → 黑熊登场
+	var lines: Array[DialogueLine] = []
+	lines.append(_narration("bear_intro_01",
+		"[color=#888]——一段陡峭的楼梯通向地下。脚步声闷在墙壁里。[/color]"))
+	lines.append(_speaker_line("bear_intro_02", "地牛",
+		"（他在门口停下，没有再跟下来）\n[color=#aaaaaa]里面有「客人」在等你。[/color]\n[color=#ffd93d]撑过 90 秒。[/color]\n（话毕，门在你身后落下，发出一声闷响）"))
+	lines.append(_narration("bear_intro_03",
+		"[color=#888]地下室不大，光线昏暗。中央有一个铁圆板，四面是黑色高墙。[/color]\n你瞥见墙边竖着 [color=#ffd93d]3 根铁柱[/color]——粗、矮、看起来能挡住东西。"))
+	lines.append(_narration("bear_intro_04",
+		"[color=#b71c1c]——铁门里传来一声闷吼。不是人。[/color]\n（一只通体漆黑、双腿站立的[color=#ffd93d]巨熊[/color]从铁门里走出来，脖颈处有一道浅浅的月牙白纹）\n它看了你一眼，喉咙里又是一声低吼。"))
+	lines.append(_narration("bear_intro_05",
+		"[color=#aaaaaa]——你立刻明白这屋子的玩法。[/color]\n[color=#ffd93d]当黑熊咆哮时，铁柱就是你唯一的安全区。[/color]\n[color=#888]靠近其中任意一根铁柱，就不会被冲击波刮到。[/color]"))
+	for i in range(lines.size() - 1):
+		lines[i].auto_next_line_id = lines[i + 1].line_id
+	register("bear_lair_intro", lines, lines[0].line_id)
+
+func _register_bear_endings() -> void:
+	# 胜利
+	var w: DialogueLine = DialogueLine.new()
+	w.line_id = "bear_win_01"
+	w.speaker_name = "地牛"
+	w.text = "（铁门打开。地牛靠在门框上等着）\n[color=#aaaaaa]站到最后了。[/color]\n[color=#ffd93d]+10 个「道」。[/color]\n（他把一小袋小球放在你手心，转头让出路）\n下次……我会让那只黑熊再饿两天。"
+	register("bear_win", [w], w.line_id)
+
+	# 失败
+	var l1: DialogueLine = DialogueLine.new()
+	l1.line_id = "bear_lose_01"
+	l1.speaker_name = "旁白"
+	l1.text = "[color=#b71c1c]——黑熊一把将你按在地上。[/color]\n你眼前一阵眩晕，喉咙里发不出声。"
+	l1.auto_next_line_id = "bear_lose_02"
+	var l2: DialogueLine = DialogueLine.new()
+	l2.line_id = "bear_lose_02"
+	l2.speaker_name = "地牛"
+	l2.text = "（铁门重新打开。地牛进来，弯腰看了你一眼）\n[color=#aaaaaa]……门票作废。[/color]\n下回学聪明点：[color=#ffd93d]咆哮之前，靠铁柱。[/color]"
+	register("bear_lose", [l1, l2], l1.line_id)
 
 # === 雨后春笋（人狗）入场过场（沿用 P6） ===
 

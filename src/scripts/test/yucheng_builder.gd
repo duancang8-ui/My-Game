@@ -33,6 +33,9 @@ const NPCS: Array = [
 	["info_board",     "yu_info_board",     "玉城信息员",     Vector2(0, 40),      Color(0.95, 0.92, 0.85), "info"],
 	# P8：东区废墟旁，戴鼠面具的女孩开了个小考验
 	["rat_npc",        "rat_npc_yucheng",   "人鼠·瘦小女孩", Vector2(320, -60),   Color(0.7, 0.65, 0.6),   "game"],
+	# P10：眼镜男拉客 + 地牛主持
+	["eyeglass",       "bear_eyeglass_pitch","戴眼镜的良人", Vector2(120, -40),   Color(0.85, 0.85, 0.95), ""],
+	["earth_cow",      "bear_earth_cow_pitch","地牛·黑西装", Vector2(-280, 240),  Color(0.18, 0.15, 0.13), "game"],
 ]
 
 func _ready() -> void:
